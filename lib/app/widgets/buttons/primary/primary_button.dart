@@ -10,6 +10,7 @@ class PrimaryButton extends StatelessWidget {
     this.textStyle,
     this.elevation,
     this.borderRadius,
+    this.icon,
   }) : super(key: key);
 
   final String text;
@@ -19,6 +20,7 @@ class PrimaryButton extends StatelessWidget {
   final TextStyle? textStyle;
   final double? elevation;
   final double? borderRadius;
+  final Widget? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,8 @@ class PrimaryButton extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         height: 50,
-        child: ElevatedButton(
+        child: ElevatedButton.icon(
+          icon: icon ?? const SizedBox(),
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
             primary: color ?? Colors.black,
@@ -38,7 +41,7 @@ class PrimaryButton extends StatelessWidget {
             ),
             maximumSize: const Size(double.infinity, 100),
           ),
-          child: Text(
+          label: Text(
             text,
             style: textStyle ??
                 const TextStyle(
