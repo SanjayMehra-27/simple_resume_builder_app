@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../modules/resume/widgets/education_page.dart';
+import '../../modules/resume/widgets/experience_page.dart';
 import '../../modules/resume/widgets/profile_page.dart';
 
 class ResumeSection {
@@ -47,7 +48,13 @@ List<ResumeSection> resumeSections = [
     id: 3,
     title: 'Experience',
     icon: Icons.work,
-    onTap: () {},
+    onTap: () {
+      // Open Experience Page
+      Get.to(
+        () => const ExperiencePage(),
+        transition: Transition.rightToLeft,
+      );
+    },
   ),
   ResumeSection(
     id: 4,
