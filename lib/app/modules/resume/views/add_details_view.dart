@@ -56,7 +56,9 @@ class AddDetailsView extends StatelessWidget {
                           Icons.arrow_forward_ios,
                           color: Colors.black,
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          resumeSections[index].onTap?.call();
+                        },
                       );
                     },
                   ),
@@ -88,20 +90,12 @@ class AddDetailsView extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Save button
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: PrimaryButton(
-                    text: 'Save',
-                    onPressed: () {
-                      // Close the Add Details page
-                      Get.back();
-                    },
-                  ),
-                ),
+              PrimaryButton(
+                text: 'Done',
+                onPressed: () {
+                  // Close the Add Details page
+                  Get.back();
+                },
               ),
             ],
           ),

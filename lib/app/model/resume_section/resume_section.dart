@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../modules/resume/widgets/profile_page.dart';
 
 class ResumeSection {
   final int id;
@@ -19,7 +22,13 @@ List<ResumeSection> resumeSections = [
     id: 1,
     title: 'Profile',
     icon: Icons.person,
-    onTap: () {},
+    onTap: () {
+      // Open Profile Page
+      Get.to(
+        () => const ProfilePage(),
+        transition: Transition.rightToLeft,
+      );
+    },
   ),
   ResumeSection(
     id: 2,

@@ -22,21 +22,31 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        primary: color ?? Colors.black,
-        onPrimary: textColor ?? Colors.white,
-        elevation: elevation ?? 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius ?? 8),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: SizedBox(
+        width: double.infinity,
+        height: 50,
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            primary: color ?? Colors.black,
+            onPrimary: textColor ?? Colors.white,
+            elevation: elevation ?? 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(borderRadius ?? 8),
+            ),
+            maximumSize: const Size(double.infinity, 100),
+          ),
+          child: Text(
+            text,
+            style: textStyle ??
+                const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500),
+          ),
         ),
-      ),
-      child: Text(
-        text,
-        style: textStyle ??
-            const TextStyle(
-                color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
       ),
     );
   }
