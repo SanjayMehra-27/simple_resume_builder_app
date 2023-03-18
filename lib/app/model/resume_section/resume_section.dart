@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../modules/resume/widgets/education_page.dart';
 import '../../modules/resume/widgets/experience_page.dart';
 import '../../modules/resume/widgets/profile_page.dart';
+import '../../modules/resume/widgets/projects_page.dart';
 import '../../modules/resume/widgets/skills_page.dart';
 
 class ResumeSection {
@@ -73,7 +74,13 @@ List<ResumeSection> resumeSections = [
     id: 5,
     title: 'Projects',
     icon: Icons.code,
-    onTap: () {},
+    onTap: () {
+      // Open Projects Page
+      Get.to(
+        () => const ProjectsPage(),
+        transition: Transition.rightToLeft,
+      );
+    },
   ),
   ResumeSection(
     id: 6,
