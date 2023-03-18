@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../modules/resume/widgets/education_page.dart';
 import '../../modules/resume/widgets/experience_page.dart';
+import '../../modules/resume/widgets/languages_page.dart';
 import '../../modules/resume/widgets/profile_page.dart';
 import '../../modules/resume/widgets/projects_page.dart';
 import '../../modules/resume/widgets/skills_page.dart';
@@ -84,14 +85,14 @@ List<ResumeSection> resumeSections = [
   ),
   ResumeSection(
     id: 6,
-    title: 'Contact',
-    icon: Icons.contact_mail,
-    onTap: () {},
-  ),
-  ResumeSection(
-    id: 7,
     title: 'Languages',
     icon: Icons.language,
-    onTap: () {},
+    onTap: () {
+      // Open Languages Page
+      Get.to(
+        () => const LanguagesPage(),
+        transition: Transition.rightToLeft,
+      );
+    },
   ),
 ];
