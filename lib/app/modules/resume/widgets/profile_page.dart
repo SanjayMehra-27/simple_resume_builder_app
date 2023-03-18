@@ -39,7 +39,7 @@ class ProfilePage extends StatelessWidget {
                     const Padding(
                       padding: EdgeInsets.all(40.0),
                       child: CircleAvatar(
-                        radius: 100,
+                        radius: 50,
                         backgroundColor: Colors.white,
                         backgroundImage:
                             AssetImage('assets/images/profile_avatar.png'),
@@ -56,11 +56,23 @@ class ProfilePage extends StatelessWidget {
                       hintText: 'e.g. Software Engineer',
                       labelText: 'Your Designation',
                     ),
-                    // Your City
+                    // Email
+                    const SizedBox(height: 20),
+                    const PrimaryTextField(
+                      hintText: 'e.g. john@gmail.com',
+                      labelText: 'Your Email',
+                    ),
+                    // Phone
+                    const SizedBox(height: 20),
+                    const PrimaryTextField(
+                      hintText: 'e.g. +91 1234567890',
+                      labelText: 'Your Phone',
+                    ),
+                    // Your Address
                     const SizedBox(height: 20),
                     const PrimaryTextField(
                       hintText: 'e.g. New York',
-                      labelText: 'Your City',
+                      labelText: 'Your Address',
                     ),
 
                     // Save Button
@@ -68,24 +80,12 @@ class ProfilePage extends StatelessWidget {
                     const SizedBox(height: 20),
                     PrimaryButton(
                       text: 'Save',
+                      icon: const Icon(Icons.save, color: Colors.white),
                       onPressed: () {},
                     ),
                   ]),
             ),
-          )
-
-          // Save Button
-          // const SizedBox(height: 20),
-          // Container(
-          //   height: 50,
-          //   width: 300,
-          //   decoration: BoxDecoration(
-          //     color: Colors.black,
-          //     borderRadius: BorderRadius.circular(10),
-          //   ),
-          //   child: const Center(
-          //     child: Text(
-          ),
+          )),
     );
   }
 }
