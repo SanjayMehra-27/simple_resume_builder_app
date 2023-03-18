@@ -5,8 +5,8 @@ import 'package:simple_resume_builder_app/app/constants/text_style_const/text_st
 import '../../../widgets/buttons/primary/primary_button.dart';
 import '../../../widgets/text_field/primary/primary_text_field.dart';
 
-class EducationPage extends StatelessWidget {
-  const EducationPage({Key? key}) : super(key: key);
+class SkillsPage extends StatelessWidget {
+  const SkillsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class EducationPage extends StatelessWidget {
         backgroundColor: Colors.white,
         appBar: AppBar(
           iconTheme: const IconThemeData(color: Colors.black),
-          title: const Text('Your Education', style: AppTextStyleConst.heading),
+          title: const Text('Your Skills', style: AppTextStyleConst.heading),
           centerTitle: false,
           backgroundColor: Colors.white,
           elevation: 0,
@@ -35,56 +35,50 @@ class EducationPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  margin: const EdgeInsets.all(16),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 10,
-                        offset: Offset(0, 5),
+                const SizedBox(height: 20),
+                PrimaryTextField(
+                  hintText: 'e.g. Flutter, Dart, Firebase, etc.',
+                  labelText: 'Your Skills',
+                  suffix: Container(
+                    height: 35,
+                    padding: const EdgeInsets.all(5),
+                    child: FloatingActionButton(
+                      onPressed: () {},
+                      child: const Icon(Icons.add),
+                      backgroundColor: Colors.green,
+                      elevation: 0.1,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Skills List
+                Expanded(
+                  child: ListView(
+                    children: const [
+                      ListTile(
+                        title: Text('Flutter'),
+                        trailing: Icon(Icons.close),
+                      ),
+                      ListTile(
+                        title: Text('Dart'),
+                        trailing: Icon(Icons.close),
+                      ),
+                      ListTile(
+                        title: Text('Firebase'),
+                        trailing: Icon(Icons.close),
                       ),
                     ],
                   ),
-                  child: ListTile(
-                    onLongPress: () {},
-                    isThreeLine: true,
-                    title: const Text(
-                      'Bachelor of Engineering',
-                      style: AppTextStyleConst.heading,
-                    ),
-                    contentPadding: const EdgeInsets.all(16),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'University of Engineering and Technology',
-                          style: AppTextStyleConst.subtitle,
-                        ),
-                        Text(
-                          'Aug 2017 - Aug 2021',
-                          style: AppTextStyleConst.caption,
-                        ),
-                      ],
-                    ),
-                    onTap: () {
-                      // Add Education
-                    },
-                  ),
                 ),
 
-                // Add Education Button
+                // Add Skills Button
                 const Expanded(child: SizedBox()),
                 const SizedBox(height: 20),
                 PrimaryButton(
-                  text: 'Add Education',
-                  icon: const Icon(Icons.add),
+                  text: 'Go Back',
                   onPressed: () {
-                    // Add Education Bottom Sheet
-                    Get.bottomSheet(
-                      const AddEducationBottomsheet(),
-                    );
+                    // Go back to the previous page
+                    Navigator.pop(context);
                   },
                 ),
               ]),
@@ -94,8 +88,8 @@ class EducationPage extends StatelessWidget {
   }
 }
 
-class AddEducationBottomsheet extends StatelessWidget {
-  const AddEducationBottomsheet({
+class AddSkillsBottomsheet extends StatelessWidget {
+  const AddSkillsBottomsheet({
     Key? key,
   }) : super(key: key);
 
@@ -115,7 +109,7 @@ class AddEducationBottomsheet extends StatelessWidget {
         children: [
           const SizedBox(height: 20),
           const Text(
-            'Add Education',
+            'Add Skills',
             style: AppTextStyleConst.heading,
           ),
           const SizedBox(height: 20),
@@ -138,7 +132,7 @@ class AddEducationBottomsheet extends StatelessWidget {
             text: 'Save',
             icon: const Icon(Icons.save),
             onPressed: () {
-              // Save Education
+              // Save Skills
               Get.back();
             },
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:simple_resume_builder_app/app/constants/text_style_const/text_style_const.dart';
 
 import '../../../widgets/buttons/primary/primary_button.dart';
+import '../../../widgets/text_field/primary/primary_text_field.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -63,7 +64,7 @@ class ProfilePage extends StatelessWidget {
                     ),
 
                     // Save Button
-                    Expanded(child: SizedBox()),
+                    const Expanded(child: SizedBox()),
                     const SizedBox(height: 20),
                     PrimaryButton(
                       text: 'Save',
@@ -85,46 +86,6 @@ class ProfilePage extends StatelessWidget {
           //   child: const Center(
           //     child: Text(
           ),
-    );
-  }
-}
-
-class PrimaryTextField extends StatelessWidget {
-  const PrimaryTextField({
-    Key? key,
-    this.hintText,
-    this.labelText,
-    this.controller,
-  }) : super(key: key);
-
-  final String? hintText;
-  final String? labelText;
-  final TextEditingController? controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 22),
-          child: Text(
-            labelText ?? 'Label',
-            style: AppTextStyleConst.title,
-          ),
-        ),
-        const SizedBox(height: 10),
-        TextFormField(
-          decoration: InputDecoration(
-            hintText: hintText ?? '',
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 25,
-              vertical: 15,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
