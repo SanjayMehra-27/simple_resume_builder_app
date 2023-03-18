@@ -37,7 +37,7 @@ class LanguagesPage extends StatelessWidget {
               children: [
                 const SizedBox(height: 50),
                 // Languages
-                PrimaryTextField(
+                const PrimaryTextField(
                   hintText: 'e.g. English, Hindi, etc',
                   labelText: 'You Speak ...',
                 ),
@@ -46,10 +46,10 @@ class LanguagesPage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Chip(
-                      label: const Text('Beginner'),
+                    const Chip(
+                      label: Text('Beginner'),
                       backgroundColor: Colors.green,
-                      labelStyle: const TextStyle(color: Colors.white),
+                      labelStyle: TextStyle(color: Colors.white),
                       elevation: 0.1,
                     ),
                     Chip(
@@ -106,60 +106,6 @@ class LanguagesPage extends StatelessWidget {
                 ),
               ]),
         ),
-      ),
-    );
-  }
-}
-
-class AddLanguagesBottomsheet extends StatelessWidget {
-  const AddLanguagesBottomsheet({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 470,
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          const Text(
-            'Add Languages',
-            style: AppTextStyleConst.heading,
-          ),
-          const SizedBox(height: 20),
-          const PrimaryTextField(
-            hintText: 'e.g. Bachelor of Engineering',
-            labelText: 'Degree',
-          ),
-          const SizedBox(height: 20),
-          const PrimaryTextField(
-            hintText: 'e.g. University of Engineering and Technology',
-            labelText: 'Institute',
-          ),
-          const SizedBox(height: 20),
-          const PrimaryTextField(
-            hintText: 'e.g. Aug 2017 - Aug 2021',
-            labelText: 'Duration',
-          ),
-          const SizedBox(height: 20),
-          PrimaryButton(
-            text: 'Save',
-            icon: const Icon(Icons.save),
-            onPressed: () {
-              // Save Languages
-              Get.back();
-            },
-          ),
-        ],
       ),
     );
   }
