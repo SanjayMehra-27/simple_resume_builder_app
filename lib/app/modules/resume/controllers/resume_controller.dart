@@ -43,6 +43,12 @@ class ResumeController extends GetxController {
   // Skills Section
   final skillsTextEditingController = TextEditingController().obs;
 
+  // Projects Section
+  final projectsNameTextEditingController = TextEditingController().obs;
+  final projectsSummaryTextEditingController = TextEditingController().obs;
+  final projectsTechStackTextEditingController = TextEditingController().obs;
+  final projectsYearTextEditingController = TextEditingController().obs;
+
   final sectionIndex = 0.obs;
   final dragging = false.obs;
 
@@ -397,6 +403,9 @@ class ResumeController extends GetxController {
       } else {
         await resumeBox.put('projects', [project.toJson()]);
       }
+      await getProjects(); // Update the projects section
+      getResume();
+      Get.back();
     } catch (e) {
       log(e.toString());
     }
@@ -412,6 +421,8 @@ class ResumeController extends GetxController {
             (data as List).map((e) => ProjectModel.fromJson(e)).toList();
         projectsSection.value = projects;
         log(projects.toString());
+      } else {
+        projectsSection.value = [];
       }
     } catch (e) {
       log(e.toString());
@@ -433,6 +444,9 @@ class ResumeController extends GetxController {
           projects[index] = project;
           await resumeBox.put(
               'projects', projects.map((e) => e.toJson()).toList());
+          await getProjects(); // Update the projects section
+          getResume();
+          Get.back();
         }
       }
     } catch (e) {
@@ -453,7 +467,12 @@ class ResumeController extends GetxController {
           projects.removeAt(index);
           await resumeBox.put(
               'projects', projects.map((e) => e.toJson()).toList());
+          await getProjects(); // Update the projects section
+          getResume();
         }
+      } else {
+        await getProjects(); // Update the projects section
+        getResume();
       }
     } catch (e) {
       log(e.toString());

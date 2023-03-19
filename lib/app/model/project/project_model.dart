@@ -3,11 +3,13 @@ class ProjectModel {
   int? id;
   final String? project;
   final String? description;
+  final String? techStack;
   final String? year;
 
   ProjectModel({
     this.project,
     this.description,
+    this.techStack,
     this.year,
     int? id,
   });
@@ -22,6 +24,7 @@ class ProjectModel {
     return {
       'id': id ?? generateId(),
       'project': project,
+      'tech_stack': techStack,
       'description': description,
       'year': year,
     };
@@ -32,6 +35,7 @@ class ProjectModel {
     return ProjectModel(
       id: json['id'],
       project: json['project'],
+      techStack: json['tech_stack'],
       description: json['description'],
       year: json['year'],
     );
