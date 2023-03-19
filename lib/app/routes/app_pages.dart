@@ -13,7 +13,7 @@ class AppPages {
   static final routes = [
     GetPage(
       name: _Paths.RESUME,
-      page: () => const ResumeView(),
+      page: () => ResumeView(),
       binding: ResumeBinding(),
     ),
   ];
