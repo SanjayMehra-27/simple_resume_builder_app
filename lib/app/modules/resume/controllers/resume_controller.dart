@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:simple_resume_builder_app/app/model/language/language_model.dart';
@@ -19,6 +20,13 @@ class ResumeController extends GetxController {
   final skillsSection = <SkillModel>[].obs;
   final languagesSection = <LanguageModel>[].obs;
   final projectsSection = <ProjectModel>[].obs;
+
+  // Profile Section
+  final nameTextEditingController = TextEditingController().obs;
+  final designationTextEditingController = TextEditingController().obs;
+  final emailTextEditingController = TextEditingController().obs;
+  final phoneTextEditingController = TextEditingController().obs;
+  final addressTextEditingController = TextEditingController().obs;
 
   final sectionIndex = 0.obs;
   final dragging = false.obs;
@@ -59,13 +67,16 @@ class ResumeController extends GetxController {
    *  Profile Section APIs
    */
   // Add or update the profile section
-  Future<void> addOrUpdateProfileSection(ProfileModel profile) async {
+  Future<bool> addOrUpdateProfileSection(ProfileModel profile) async {
+    bool isUpdated = false;
     try {
       await resumeBox.put('profile', profile.toJson());
-      // profileSection.value = profile;
+      await getProfileSection();
+      isUpdated = true;
     } catch (e) {
       log(e.toString());
     }
+    return isUpdated;
   }
 
   // Get the profile section

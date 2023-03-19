@@ -34,7 +34,8 @@ class ProfilePage extends GetView<ResumeController> {
           ),
           body: SafeArea(
             child: Center(
-              child: Column(
+                child: Obx(
+              () => Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -49,33 +50,39 @@ class ProfilePage extends GetView<ResumeController> {
                       ),
                     ),
                     // Name
-                    const PrimaryTextField(
+                    PrimaryTextField(
                       hintText: 'e.g. John Doe',
                       labelText: 'Your Name',
+                      controller: controller.nameTextEditingController.value,
                     ),
                     // Designation
                     const SizedBox(height: 20),
-                    const PrimaryTextField(
+                    PrimaryTextField(
                       hintText: 'e.g. Software Engineer',
                       labelText: 'Your Designation',
+                      controller:
+                          controller.designationTextEditingController.value,
                     ),
                     // Email
                     const SizedBox(height: 20),
-                    const PrimaryTextField(
+                    PrimaryTextField(
                       hintText: 'e.g. john@gmail.com',
                       labelText: 'Your Email',
+                      controller: controller.emailTextEditingController.value,
                     ),
                     // Phone
                     const SizedBox(height: 20),
-                    const PrimaryTextField(
+                    PrimaryTextField(
                       hintText: 'e.g. +91 1234567890',
                       labelText: 'Your Phone',
+                      controller: controller.phoneTextEditingController.value,
                     ),
                     // Your Address
                     const SizedBox(height: 20),
-                    const PrimaryTextField(
+                    PrimaryTextField(
                       hintText: 'e.g. New York',
                       labelText: 'Your Address',
+                      controller: controller.addressTextEditingController.value,
                     ),
 
                     // Save Button
@@ -84,18 +91,29 @@ class ProfilePage extends GetView<ResumeController> {
                     PrimaryButton(
                       text: 'Save',
                       icon: const Icon(Icons.save, color: Colors.white),
-                      onPressed: () {
-                        controller.addOrUpdateProfileSection(ProfileModel(
-                          name: 'Sanjay',
-                          email: 'john@gmail.com',
-                          phone: '+91 1234567890',
-                          address: '123, ABC Street, XYZ City, 123456',
-                          designation: 'Software Engineer',
-                        ));
+                      onPressed: () async {
+                        bool isUpdate = false;
+                        isUpdate = await controller.addOrUpdateProfileSection(
+                          ProfileModel(
+                            name:
+                                controller.nameTextEditingController.value.text,
+                            email: controller
+                                .emailTextEditingController.value.text,
+                            phone: controller
+                                .phoneTextEditingController.value.text,
+                            address: controller
+                                .addressTextEditingController.value.text,
+                            designation: controller
+                                .designationTextEditingController.value.text,
+                          ),
+                        );
+                        if (isUpdate) {
+                          Get.back();
+                        }
                       },
                     ),
                   ]),
-            ),
+            )),
           )),
     );
   }

@@ -49,66 +49,60 @@ class ResumeView extends GetView<ResumeController> {
                   child: CircularProgressIndicator(),
                 )
               : SafeArea(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Obx(
-                            () => ProfileWidget(
-                                profile:
-                                    controller.profileSection.value.name != null
-                                        ? controller.profileSection.value
-                                        : ProfileModel()),
-                          ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Obx(
+                          () => ProfileWidget(
+                              profile:
+                                  controller.profileSection.value.name != null
+                                      ? controller.profileSection.value
+                                      : ProfileModel()),
                         ),
-                        SingleChildScrollView(
-                          child: Expanded(
-                              child: StaggeredGrid.count(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 8,
-                            crossAxisSpacing: 10,
-                            axisDirection: AxisDirection.down,
-                            children: [
-                              for (int i = 1; i < 6; i++)
-                                StaggeredGridTile.fit(
-                                  crossAxisCellCount: 1,
-                                  child: Draggable(
-                                    data: i,
-                                    onDragStarted: () {
-                                      controller.dragging.value = true;
-                                    },
-                                    onDragEnd: (details) {
-                                      controller.dragging.value = false;
-                                    },
-                                    onDragCompleted: () =>
-                                        controller.dragging.value = false,
-                                    onDraggableCanceled: (velocity, offset) =>
-                                        controller.dragging.value = false,
-                                    feedback: Obx(() =>
-                                        controller.dragging.value == true
-                                            ? DraggingFeedbackWidget(
-                                                controller: controller, i: i)
-                                            : _buildGridItem(
-                                                controller.resumeItems[i],
-                                                isFeedback: false)),
-                                    childWhenDragging: const SizedBox.shrink(),
-                                    child: Obx(
-                                      () => _buildGridItem(
-                                          controller.resumeItems[i],
-                                          isFeedback:
-                                              controller.dragging.value),
-                                    ),
-                                  ),
+                      ),
+                      Expanded(
+                          child: StaggeredGrid.count(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 8,
+                        crossAxisSpacing: 10,
+                        axisDirection: AxisDirection.down,
+                        children: [
+                          for (int i = 1; i < 6; i++)
+                            StaggeredGridTile.fit(
+                              crossAxisCellCount: 1,
+                              child: Draggable(
+                                data: i,
+                                onDragStarted: () {
+                                  controller.dragging.value = true;
+                                },
+                                onDragEnd: (details) {
+                                  controller.dragging.value = false;
+                                },
+                                onDragCompleted: () =>
+                                    controller.dragging.value = false,
+                                onDraggableCanceled: (velocity, offset) =>
+                                    controller.dragging.value = false,
+                                feedback: Obx(() => controller.dragging.value ==
+                                        true
+                                    ? DraggingFeedbackWidget(
+                                        controller: controller, i: i)
+                                    : _buildGridItem(controller.resumeItems[i],
+                                        isFeedback: false)),
+                                childWhenDragging: const SizedBox.shrink(),
+                                child: Obx(
+                                  () => _buildGridItem(
+                                      controller.resumeItems[i],
+                                      isFeedback: controller.dragging.value),
                                 ),
-                            ],
-                          )),
-                        ),
-                        // ),
-                      ],
-                    ),
+                              ),
+                            ),
+                        ],
+                      )),
+                      // ),
+                    ],
                   ),
                 ),
         ));

@@ -30,6 +30,7 @@ class PrimaryTextField extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         TextFormField(
+          controller: controller,
           decoration: InputDecoration(
             hintText: hintText ?? '',
             border: InputBorder.none,
