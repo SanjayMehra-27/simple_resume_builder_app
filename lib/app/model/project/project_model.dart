@@ -14,7 +14,7 @@ class ProjectModel {
 
   // generate id
   int generateId() {
-    return 5;
+    return DateTime.now().microsecondsSinceEpoch;
   }
 
   // convert toJson

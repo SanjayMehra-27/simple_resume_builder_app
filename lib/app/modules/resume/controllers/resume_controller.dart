@@ -28,6 +28,11 @@ class ResumeController extends GetxController {
   final phoneTextEditingController = TextEditingController().obs;
   final addressTextEditingController = TextEditingController().obs;
 
+  // Education Section
+  final educationDegreeTextEditingController = TextEditingController().obs;
+  final educationInstituteTextEditingController = TextEditingController().obs;
+  final educationDurationTextEditingController = TextEditingController().obs;
+
   final sectionIndex = 0.obs;
   final dragging = false.obs;
 
@@ -101,7 +106,8 @@ class ResumeController extends GetxController {
    */
 
   // Add the education section to the resume
-  Future<void> addEducationSection(EducationModel education) async {
+  Future<bool> addEducationSection(EducationModel education) async {
+    bool isAdded = false;
     try {
       final data = await resumeBox.get('education', defaultValue: []);
       if (data.length > 0) {
@@ -110,12 +116,16 @@ class ResumeController extends GetxController {
         educations.add(education);
         await resumeBox.put(
             'education', educations.map((e) => e.toJson()).toList());
+        await getEducationSection(); // Update the education section
+        getResume();
+        isAdded = true;
       } else {
         await resumeBox.put('education', [education.toJson()]);
       }
     } catch (e) {
       log(e.toString());
     }
+    return isAdded;
   }
 
   // Get education section from the resume
@@ -137,7 +147,8 @@ class ResumeController extends GetxController {
   }
 
   // Update the education by id
-  Future<void> updateEducationSection(EducationModel education) async {
+  Future<bool> updateEducationSection(EducationModel education) async {
+    bool isUpdate = false;
     try {
       final data = await resumeBox.get('education');
       if (data != null) {
@@ -150,10 +161,14 @@ class ResumeController extends GetxController {
           await resumeBox.put(
               'education', educations.map((e) => e.toJson()).toList());
         }
+        await getEducationSection(); // Update the education section
+        getResume();
+        isUpdate = true;
       }
     } catch (e) {
       log(e.toString());
     }
+    return isUpdate;
   }
 
   // Delete the education by id
@@ -170,6 +185,8 @@ class ResumeController extends GetxController {
           await resumeBox.put(
               'education', educations.map((e) => e.toJson()).toList());
         }
+        await getEducationSection(); // Update the education section
+        getResume();
       }
     } catch (e) {
       log(e.toString());
