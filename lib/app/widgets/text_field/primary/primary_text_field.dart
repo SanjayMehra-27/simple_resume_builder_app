@@ -34,12 +34,7 @@ class PrimaryTextField extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         TextFormField(
-          initialValue: initialValue,
-          controller:
-              initialValue == null || initialValue == '' ? controller : null,
-          onChanged: (value) {
-            initialValue = null;
-          },
+          controller: controller,
           maxLines: maxLines ?? 1,
           decoration: InputDecoration(
             hintText: hintText ?? '',

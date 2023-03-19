@@ -36,19 +36,19 @@ class ExperiencePage extends GetView<ResumeController> {
           ),
         ),
         body: SafeArea(
-          child: controller.experienceSection.isEmpty
-              ? const EmptyScreenWidget(
-                  text: 'No Experience Added',
-                  description:
-                      'Add your experience to make your resume more attractive')
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                      // Experience Card
-                      Obx(
-                        () => Expanded(
-                          child: ListView.builder(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Experience Card
+                Expanded(
+                  child: Obx(
+                    () => controller.experienceSection.isEmpty
+                        ? const EmptyScreenWidget(
+                            text: 'No Experience Added',
+                            description:
+                                'Add your experience to make your resume more attractive')
+                        : ListView.builder(
                             itemCount: controller.experienceSection.length,
                             shrinkWrap: true,
                             itemBuilder: (context, index) => Container(
@@ -74,6 +74,33 @@ class ExperiencePage extends GetView<ResumeController> {
                                   icon: const Icon(Icons.delete),
                                 ),
                                 onTap: () {
+                                  // Set data to the controller
+                                  controller
+                                      .experienceCompanyTextEditingController
+                                      .value
+                                      .text = controller
+                                          .experienceSection[index].company ??
+                                      '';
+                                  controller
+                                      .experienceDesignationTextEditingController
+                                      .value
+                                      .text = controller
+                                          .experienceSection[index]
+                                          .designation ??
+                                      '';
+                                  controller
+                                      .experienceDurationTextEditingController
+                                      .value
+                                      .text = controller
+                                          .experienceSection[index].duration ??
+                                      '';
+                                  controller
+                                      .experienceSummaryTextEditingController
+                                      .value
+                                      .text = controller
+                                          .experienceSection[index]
+                                          .description ??
+                                      '';
                                   // Edit Experience Bottom Sheet
                                   showModalBottomSheet(
                                     context: context,
@@ -126,30 +153,37 @@ class ExperiencePage extends GetView<ResumeController> {
                               ),
                             ),
                           ),
-                        ),
-                      ),
+                  ),
+                ),
 
-                      // Add Experience Button
-                      const Expanded(child: SizedBox()),
-                      const SizedBox(height: 20),
-                      PrimaryButton(
-                        text: 'Add Experience',
-                        icon: const Icon(Icons.add),
-                        onPressed: () async {
-                          // Add Experience Bottom Sheet
-                          await showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            constraints: const BoxConstraints(
-                              maxHeight: 570,
-                            ),
-                            useRootNavigator: true,
-                            builder: (context) =>
-                                const AddExperienceBottomsheet(),
-                          );
-                        },
+                // Add Experience Button
+                const SizedBox(height: 20),
+                PrimaryButton(
+                  text: 'Add Experience',
+                  icon: const Icon(Icons.add),
+                  onPressed: () async {
+                    // Clear the text fields
+                    controller.experienceCompanyTextEditingController.value
+                        .clear();
+                    controller.experienceDesignationTextEditingController.value
+                        .clear();
+                    controller.experienceDurationTextEditingController.value
+                        .clear();
+                    controller.experienceSummaryTextEditingController.value
+                        .clear();
+                    // Add Experience Bottom Sheet
+                    await showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      constraints: const BoxConstraints(
+                        maxHeight: 570,
                       ),
-                    ]),
+                      useRootNavigator: true,
+                      builder: (context) => const AddExperienceBottomsheet(),
+                    );
+                  },
+                ),
+              ]),
         ),
       ),
     );
@@ -188,7 +222,6 @@ class AddExperienceBottomsheet extends GetView<ResumeController> {
             // Company Name, Designation, Duration, Summary
             const SizedBox(height: 20),
             PrimaryTextField(
-              initialValue: experience?.company,
               hintText: 'e.g. Google',
               labelText: 'Company Name',
               controller:
@@ -196,7 +229,6 @@ class AddExperienceBottomsheet extends GetView<ResumeController> {
             ),
             const SizedBox(height: 20),
             PrimaryTextField(
-              initialValue: experience?.designation,
               hintText: 'e.g. Software Engineer',
               labelText: 'Designation',
               controller:
@@ -204,7 +236,6 @@ class AddExperienceBottomsheet extends GetView<ResumeController> {
             ),
             const SizedBox(height: 20),
             PrimaryTextField(
-              initialValue: experience?.duration,
               hintText: 'e.g. Aug 2017 - Aug 2021',
               labelText: 'Duration',
               controller:
@@ -212,7 +243,6 @@ class AddExperienceBottomsheet extends GetView<ResumeController> {
             ),
             const SizedBox(height: 20),
             PrimaryTextField(
-              initialValue: experience?.description,
               hintText: 'e.g. Worked on Flutter, Firebase, and Google Cloud',
               labelText: 'Summary',
               maxLines: 2,

@@ -9,7 +9,7 @@ class EducationModel {
     this.institute,
     this.degree,
     this.duration,
-    int? id,
+    this.id,
   });
 
   // generate id

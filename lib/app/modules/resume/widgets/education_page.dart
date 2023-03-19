@@ -34,116 +34,122 @@ class EducationPage extends GetView<ResumeController> {
           ),
         ),
         body: SafeArea(
-          child: controller.educationSection.value.isEmpty
-              ? const EmptyScreenWidget(
-                  text: 'No Education Added',
-                  description:
-                      'Add your education details to make your resume more attractive')
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                      Obx(() => ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: controller.educationSection.value.length,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                margin: const EdgeInsets.all(16),
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 10,
-                                      offset: Offset(0, 5),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Obx(() => controller.educationSection.value.isEmpty
+                      ? const EmptyScreenWidget(
+                          text: 'No Education Added',
+                          description:
+                              'Add your education details to make your resume more attractive')
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: controller.educationSection.value.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              margin: const EdgeInsets.all(16),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 10,
+                                    offset: Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: ListTile(
+                                trailing: IconButton(
+                                  icon: Icon(
+                                    Icons.delete,
+                                    color: Colors.red[400],
+                                  ),
+                                  onPressed: () =>
+                                      controller.deleteEducationSection(
+                                          controller.educationSection[index]),
+                                ),
+                                isThreeLine: true,
+                                title: Text(
+                                  controller.educationSection[index].degree ??
+                                      '',
+                                  style: AppTextStyleConst.heading,
+                                ),
+                                contentPadding: const EdgeInsets.all(16),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      controller.educationSection[index]
+                                              .institute ??
+                                          '',
+                                      style: AppTextStyleConst.subtitle,
+                                    ),
+                                    Text(
+                                      controller.educationSection[index]
+                                              .duration ??
+                                          '',
+                                      style: AppTextStyleConst.caption,
                                     ),
                                   ],
                                 ),
-                                child: ListTile(
-                                  trailing: IconButton(
-                                    icon: Icon(
-                                      Icons.delete,
-                                      color: Colors.red[400],
+                                onTap: () {
+                                  // set data
+                                  controller
+                                      .educationDegreeTextEditingController
+                                      .value
+                                      .text = controller
+                                          .educationSection[index].degree ??
+                                      '';
+                                  controller
+                                      .educationDurationTextEditingController
+                                      .value
+                                      .text = controller
+                                          .educationSection[index].duration ??
+                                      '';
+                                  controller
+                                      .educationInstituteTextEditingController
+                                      .value
+                                      .text = controller
+                                          .educationSection[index].institute ??
+                                      '';
+
+                                  // Add Education
+                                  Get.bottomSheet(
+                                    AddEducationBottomsheet(
+                                      education:
+                                          controller.educationSection[index],
+                                      isEdit: true,
                                     ),
-                                    onPressed: () =>
-                                        controller.deleteEducationSection(
-                                            controller.educationSection[index]),
-                                  ),
-                                  isThreeLine: true,
-                                  title: Text(
-                                    controller.educationSection[index].degree ??
-                                        '',
-                                    style: AppTextStyleConst.heading,
-                                  ),
-                                  contentPadding: const EdgeInsets.all(16),
-                                  subtitle: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        controller.educationSection[index]
-                                                .institute ??
-                                            '',
-                                        style: AppTextStyleConst.subtitle,
-                                      ),
-                                      Text(
-                                        controller.educationSection[index]
-                                                .duration ??
-                                            '',
-                                        style: AppTextStyleConst.caption,
-                                      ),
-                                    ],
-                                  ),
-                                  onTap: () {
-                                    // set data
-                                    controller
-                                        .educationDegreeTextEditingController
-                                        .value
-                                        .text = controller
-                                            .educationSection[index].degree ??
-                                        '';
-                                    controller
-                                        .educationDurationTextEditingController
-                                        .value
-                                        .text = controller
-                                            .educationSection[index].duration ??
-                                        '';
-                                    controller
-                                        .educationInstituteTextEditingController
-                                        .value
-                                        .text = controller
-                                            .educationSection[index]
-                                            .institute ??
-                                        '';
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        )),
+                ),
 
-                                    // Add Education
-                                    Get.bottomSheet(
-                                      AddEducationBottomsheet(
-                                        education:
-                                            controller.educationSection[index],
-                                        isEdit: true,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                          )),
-
-                      // Add Education Button
-                      const Expanded(child: SizedBox()),
-                      const SizedBox(height: 20),
-                      PrimaryButton(
-                        text: 'Add Education',
-                        icon: const Icon(Icons.add),
-                        onPressed: () {
-                          // Add Education Bottom Sheet
-                          Get.bottomSheet(
-                            const AddEducationBottomsheet(),
-                          );
-                        },
-                      ),
-                    ]),
+                // Add Education Button
+                const SizedBox(height: 20),
+                PrimaryButton(
+                  text: 'Add Education',
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    // Clear Text Editing Controllers
+                    controller.educationDegreeTextEditingController.value
+                        .clear();
+                    controller.educationDurationTextEditingController.value
+                        .clear();
+                    controller.educationInstituteTextEditingController.value
+                        .clear();
+                    // Add Education Bottom Sheet
+                    Get.bottomSheet(
+                      const AddEducationBottomsheet(),
+                    );
+                  },
+                ),
+              ]),
         ),
       ),
     );

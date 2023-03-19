@@ -11,7 +11,7 @@ class ProjectModel {
     this.description,
     this.techStack,
     this.year,
-    int? id,
+    this.id,
   });
 
   // generate id

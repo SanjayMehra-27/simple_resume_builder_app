@@ -81,10 +81,15 @@ class ResumeController extends GetxController {
     super.onReady();
   }
 
-  @override
-  void onClose() {
-    resumeBox.close();
-    super.onClose();
+  // is resume empty
+  bool isResumeEmpty() {
+    return (profileSection.value.name == '' ||
+            profileSection.value.name == null) &&
+        educationSection.isEmpty &&
+        experienceSection.isEmpty &&
+        skillsSection.isEmpty &&
+        languagesSection.isEmpty &&
+        projectsSection.isEmpty;
   }
 
   // ignore: slash_for_doc_comments
@@ -111,6 +116,15 @@ class ResumeController extends GetxController {
       final data = await resumeBox.get('profile');
       log(data.toString());
       profileSection.value = ProfileModel.fromJson(data);
+      if (profileSection.value != null) {
+        nameTextEditingController.value.text = profileSection.value.name ?? '';
+        designationTextEditingController.value.text =
+            profileSection.value.designation ?? '';
+        emailTextEditingController.value.text =
+            profileSection.value.email ?? '';
+        phoneTextEditingController.value.text =
+            profileSection.value.phone ?? '';
+      }
       return profileSection.value;
     } catch (e) {
       log(e.toString());

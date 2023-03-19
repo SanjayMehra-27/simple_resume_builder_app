@@ -48,63 +48,72 @@ class ResumeView extends GetView<ResumeController> {
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
-              : SafeArea(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Obx(
-                          () => ProfileWidget(
-                              profile:
-                                  controller.profileSection.value.name != null
-                                      ? controller.profileSection.value
-                                      : ProfileModel()),
-                        ),
-                      ),
-                      Expanded(
-                          child: StaggeredGrid.count(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 8,
-                        crossAxisSpacing: 10,
-                        axisDirection: AxisDirection.down,
-                        children: [
-                          for (int i = 1; i < 6; i++)
-                            StaggeredGridTile.fit(
-                              crossAxisCellCount: 1,
-                              child: Draggable(
-                                data: i,
-                                onDragStarted: () {
-                                  controller.dragging.value = true;
-                                },
-                                onDragEnd: (details) {
-                                  controller.dragging.value = false;
-                                },
-                                onDragCompleted: () =>
-                                    controller.dragging.value = false,
-                                onDraggableCanceled: (velocity, offset) =>
-                                    controller.dragging.value = false,
-                                feedback: Obx(() => controller.dragging.value ==
-                                        true
-                                    ? DraggingFeedbackWidget(
-                                        controller: controller, i: i)
-                                    : _buildGridItem(controller.resumeItems[i],
-                                        isFeedback: false)),
-                                childWhenDragging: const SizedBox.shrink(),
-                                child: Obx(
-                                  () => _buildGridItem(
-                                      controller.resumeItems[i],
-                                      isFeedback: controller.dragging.value),
-                                ),
+              : controller.isResumeEmpty() == true
+                  ? const EmptyScreenMessage()
+                  : SafeArea(
+                      child: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Obx(
+                                () => ProfileWidget(
+                                    profile:
+                                        controller.profileSection.value.name !=
+                                                null
+                                            ? controller.profileSection.value
+                                            : ProfileModel()),
                               ),
                             ),
-                        ],
-                      )),
-                      // ),
-                    ],
-                  ),
-                ),
+                            Expanded(
+                                child: StaggeredGrid.count(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 8,
+                              crossAxisSpacing: 10,
+                              axisDirection: AxisDirection.down,
+                              children: [
+                                for (int i = 1; i < 6; i++)
+                                  StaggeredGridTile.fit(
+                                    crossAxisCellCount: 1,
+                                    child: Draggable(
+                                      data: i,
+                                      onDragStarted: () {
+                                        controller.dragging.value = true;
+                                      },
+                                      onDragEnd: (details) {
+                                        controller.dragging.value = false;
+                                      },
+                                      onDragCompleted: () =>
+                                          controller.dragging.value = false,
+                                      onDraggableCanceled: (velocity, offset) =>
+                                          controller.dragging.value = false,
+                                      feedback: Obx(() =>
+                                          controller.dragging.value == true
+                                              ? DraggingFeedbackWidget(
+                                                  controller: controller, i: i)
+                                              : _buildGridItem(
+                                                  controller.resumeItems[i],
+                                                  isFeedback: false)),
+                                      childWhenDragging:
+                                          const SizedBox.shrink(),
+                                      child: Obx(
+                                        () => _buildGridItem(
+                                            controller.resumeItems[i],
+                                            isFeedback:
+                                                controller.dragging.value),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            )),
+                            // ),
+                          ],
+                        ),
+                      ),
+                    ),
         ));
   }
 
@@ -314,7 +323,7 @@ class ProfileWidget extends StatelessWidget {
           children: [
             // Profile Image
             CircleAvatar(
-              radius: 50,
+              radius: 40,
               backgroundImage: profile.image == null
                   ? Image.asset(
                       'assets/images/profile_avatar.png',
@@ -330,39 +339,79 @@ class ProfileWidget extends StatelessWidget {
             const SizedBox(
               width: 24,
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  profile.name ?? '',
-                  style: AppTextStyleConst.heading,
-                ),
-                Text(
-                  profile.designation ?? '',
-                  style: AppTextStyleConst.subtitle,
-                ),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    profile.name ?? '',
+                    style: AppTextStyleConst.heading.copyWith(
+                      color: Colors.black,
+                      fontSize: 22,
+                    ),
+                  ),
+                  Text(
+                    profile.designation ?? '',
+                    style: AppTextStyleConst.subtitle,
+                  ),
+                ],
+              ),
             ),
 
             // Email and Phone, Address
             // const Spacer(),
-            // Column(
-            //   crossAxisAlignment: CrossAxisAlignment.start,
-            //   children: [
-            //     Text(
-            //       profile.email ?? '',
-            //       style: AppTextStyleConst.subtitle,
-            //     ),
-            //     Text(
-            //       profile.phone ?? '',
-            //       style: AppTextStyleConst.subtitle,
-            //     ),
-            //     Text(
-            //       profile.address ?? '',
-            //       style: AppTextStyleConst.subtitle,
-            //     ),
-            //   ],
-            // ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.email,
+                        size: 12,
+                      ),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        profile.email ?? '',
+                        style: AppTextStyleConst.body,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.phone,
+                        size: 12,
+                      ),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        profile.phone ?? '',
+                        style: AppTextStyleConst.body,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on,
+                        size: 12,
+                      ),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        profile.address ?? '',
+                        style: AppTextStyleConst.body,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ],
         )
       ],
@@ -389,19 +438,24 @@ class EducationWidget extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 // Degree
-                Text(
-                  education[index].degree ?? '',
-                  style: AppTextStyleConst.subtitle,
+                Row(
+                  children: [
+                    Text(
+                      education[index].degree ?? '',
+                      style: AppTextStyleConst.subtitle,
+                    ),
+                    const SizedBox(width: 4),
+                    // Institute
+                    if (education[index].duration != null)
+                      Text(
+                        "- ${education[index].duration}",
+                        style: AppTextStyleConst.subtitle,
+                      ),
+                  ],
                 ),
-
-                // Institute
-                Text(
-                  education[index].institute ?? '',
-                  style: AppTextStyleConst.body,
-                ),
-
                 // Duration
                 Text(
                   education[index].duration ?? '',
@@ -436,21 +490,36 @@ class ExperienceWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Company
-              Text(
-                experience[index].company ?? '',
-                style: AppTextStyleConst.subtitle,
+              Row(
+                children: [
+                  Text(
+                    experience[index].company ?? '',
+                    style: AppTextStyleConst.subtitle,
+                  ),
+                  const SizedBox(
+                    width: 4,
+                  ),
+                  if (experience[index].duration != null)
+                    Expanded(
+                      child: Text(
+                        "- ${experience[index].duration}",
+                        style: AppTextStyleConst.caption,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                ],
               ),
 
               // Duration
               Text(
-                experience[index].duration ?? '',
-                style: AppTextStyleConst.caption,
+                "${experience[index].designation}",
+                style: AppTextStyleConst.body,
               ),
 
               // Description
               Text(
                 experience[index].description ?? '',
-                style: AppTextStyleConst.body,
+                style: AppTextStyleConst.caption,
               ),
             ],
           ),
@@ -497,9 +566,21 @@ class LanguagesWidget extends StatelessWidget {
       shrinkWrap: true,
       itemCount: languages.length,
       itemBuilder: (BuildContext context, int index) {
-        return Text(
-          languages[index].language ?? '',
-          style: AppTextStyleConst.body,
+        return Row(
+          children: [
+            Text(
+              languages[index].language ?? '',
+              style: AppTextStyleConst.body,
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            if (languages[index].level != null)
+              Text(
+                "- ${languages[index].level}" ?? '',
+                style: AppTextStyleConst.caption,
+              ),
+          ],
         );
       },
     );
@@ -534,13 +615,13 @@ class ProjectsWidget extends StatelessWidget {
               // Duration
               Text(
                 projects[index].year ?? '',
-                style: AppTextStyleConst.caption,
+                style: AppTextStyleConst.body,
               ),
 
               // Description
               Text(
                 projects[index].description ?? '',
-                style: AppTextStyleConst.body,
+                style: AppTextStyleConst.caption,
               ),
             ],
           ),

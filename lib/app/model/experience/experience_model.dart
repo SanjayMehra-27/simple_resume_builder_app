@@ -11,7 +11,7 @@ class ExperienceModel {
     this.designation,
     this.duration,
     this.description,
-    int? id,
+    this.id,
   });
 
   // generate id
