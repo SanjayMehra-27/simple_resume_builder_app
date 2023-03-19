@@ -9,12 +9,14 @@ class PrimaryTextField extends StatelessWidget {
     this.labelText,
     this.controller,
     this.suffix,
+    this.initialValue,
   }) : super(key: key);
 
   final String? hintText;
   final String? labelText;
   final TextEditingController? controller;
   final Widget? suffix;
+  final String? initialValue;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,8 @@ class PrimaryTextField extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         TextFormField(
-          controller: controller,
+          initialValue: initialValue,
+          controller: initialValue == null ? controller : null,
           decoration: InputDecoration(
             hintText: hintText ?? '',
             border: InputBorder.none,

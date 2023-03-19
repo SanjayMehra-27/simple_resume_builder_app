@@ -51,6 +51,7 @@ class ProfilePage extends GetView<ResumeController> {
                     ),
                     // Name
                     PrimaryTextField(
+                      initialValue: controller.profileSection.value.name,
                       hintText: 'e.g. John Doe',
                       labelText: 'Your Name',
                       controller: controller.nameTextEditingController.value,
@@ -58,28 +59,31 @@ class ProfilePage extends GetView<ResumeController> {
                     // Designation
                     const SizedBox(height: 20),
                     PrimaryTextField(
+                      initialValue: controller.profileSection.value.designation,
                       hintText: 'e.g. Software Engineer',
                       labelText: 'Your Designation',
-                      controller:
-                          controller.designationTextEditingController.value,
+                      controller: controller.emailTextEditingController.value,
                     ),
                     // Email
                     const SizedBox(height: 20),
                     PrimaryTextField(
-                      hintText: 'e.g. john@gmail.com',
-                      labelText: 'Your Email',
-                      controller: controller.emailTextEditingController.value,
-                    ),
+                        initialValue: controller.profileSection.value.email,
+                        hintText: 'e.g. john@gmail.com',
+                        labelText: 'Your Email',
+                        controller:
+                            controller.emailTextEditingController.value),
                     // Phone
                     const SizedBox(height: 20),
                     PrimaryTextField(
-                      hintText: 'e.g. +91 1234567890',
-                      labelText: 'Your Phone',
-                      controller: controller.phoneTextEditingController.value,
-                    ),
+                        initialValue: controller.profileSection.value.phone,
+                        hintText: 'e.g. +91 1234567890',
+                        labelText: 'Your Phone',
+                        controller:
+                            controller.phoneTextEditingController.value),
                     // Your Address
                     const SizedBox(height: 20),
                     PrimaryTextField(
+                      initialValue: controller.profileSection.value.address,
                       hintText: 'e.g. New York',
                       labelText: 'Your Address',
                       controller: controller.addressTextEditingController.value,
