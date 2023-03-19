@@ -1,2 +1,4 @@
-# simple_resume_builder_app
+# Before run app
+## flutter clean && flutter pub get && cd ios && pod install
+
  
