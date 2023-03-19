@@ -38,48 +38,57 @@ class SkillsPage extends GetView<ResumeController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
-                PrimaryTextField(
-                  hintText: 'e.g. Flutter, Dart, Firebase, etc.',
-                  labelText: 'Your Skills',
-                  suffix: Container(
-                    height: 35,
-                    padding: const EdgeInsets.all(5),
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        controller.addSkillsSection(SkillModel(
-                          id: 1,
-                          skill: 'Flutter',
-                        ));
-                      },
-                      child: const Icon(Icons.add),
-                      backgroundColor: Colors.green,
-                      elevation: 0.1,
+                Obx(
+                  () => PrimaryTextField(
+                    hintText: 'e.g. Flutter, Dart, Firebase, etc.',
+                    labelText: 'Your Skills',
+                    controller: controller.skillsTextEditingController.value,
+                    suffix: Container(
+                      height: 35,
+                      padding: const EdgeInsets.all(5),
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          controller.addSkillsSection(SkillModel(
+                            skill: controller
+                                .skillsTextEditingController.value.text,
+                          ));
+                          // Clear the text field
+                          controller.skillsTextEditingController.value.clear();
+                        },
+                        backgroundColor: Colors.green,
+                        elevation: 0.1,
+                        child: const Icon(Icons.add),
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
                 // Skills List
-                Expanded(
-                  child: ListView(
-                    children: const [
-                      ListTile(
-                        title: Text('Flutter'),
-                        trailing: Icon(Icons.close),
+                Obx(() => Expanded(
+                      child: ListView.builder(
+                        itemCount: controller.skillsSection.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(
+                              controller.skillsSection[index].skill ?? '',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            trailing: IconButton(
+                              onPressed: () {
+                                controller.deleteSkillsSection(
+                                    controller.skillsSection[index]);
+                              },
+                              icon: const Icon(Icons.delete),
+                            ),
+                          );
+                        },
                       ),
-                      ListTile(
-                        title: Text('Dart'),
-                        trailing: Icon(Icons.close),
-                      ),
-                      ListTile(
-                        title: Text('Firebase'),
-                        trailing: Icon(Icons.close),
-                      ),
-                    ],
-                  ),
-                ),
+                    )),
 
                 // Add Skills Button
-                const Expanded(child: SizedBox()),
                 const SizedBox(height: 20),
                 PrimaryButton(
                   text: 'Go Back',
@@ -90,63 +99,6 @@ class SkillsPage extends GetView<ResumeController> {
                 ),
               ]),
         ),
-      ),
-    );
-  }
-}
-
-class AddSkillsBottomsheet extends GetView<ResumeController> {
-  const AddSkillsBottomsheet({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 470,
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          const Text(
-            'Add Skills',
-            style: AppTextStyleConst.heading,
-          ),
-          const SizedBox(height: 20),
-          const PrimaryTextField(
-            hintText: 'e.g. Bachelor of Engineering',
-            labelText: 'Degree',
-          ),
-          const SizedBox(height: 20),
-          const PrimaryTextField(
-            hintText: 'e.g. University of Engineering and Technology',
-            labelText: 'Institute',
-          ),
-          const SizedBox(height: 20),
-          const PrimaryTextField(
-            hintText: 'e.g. Aug 2017 - Aug 2021',
-            labelText: 'Duration',
-          ),
-          const SizedBox(height: 20),
-          PrimaryButton(
-            text: 'Save',
-            icon: const Icon(Icons.save),
-            onPressed: () {
-              // Save Skills
-              controller.addSkillsSection(SkillModel(
-                id: 1,
-                skill: 'Flutter',
-              ));
-            },
-          ),
-        ],
       ),
     );
   }

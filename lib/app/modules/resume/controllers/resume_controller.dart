@@ -40,6 +40,9 @@ class ResumeController extends GetxController {
   final experienceDurationTextEditingController = TextEditingController().obs;
   final experienceSummaryTextEditingController = TextEditingController().obs;
 
+  // Skills Section
+  final skillsTextEditingController = TextEditingController().obs;
+
   final sectionIndex = 0.obs;
   final dragging = false.obs;
 
@@ -299,6 +302,7 @@ class ResumeController extends GetxController {
 
   // Add the skills section to the resume
   Future<void> addSkillsSection(SkillModel skills) async {
+    if (skills.skill == null || skills.skill?.trim() == '') return;
     try {
       final data = await resumeBox.get('skills', defaultValue: []);
       if (data.length > 0) {
@@ -310,6 +314,8 @@ class ResumeController extends GetxController {
       } else {
         await resumeBox.put('skills', [skills.toJson()]);
       }
+      await getSkillsSection(); // Update the skills section
+      getResume();
     } catch (e) {
       log(e.toString());
     }
@@ -325,6 +331,8 @@ class ResumeController extends GetxController {
             (data as List).map((e) => SkillModel.fromJson(e)).toList();
         skillsSection.value = skills;
         log(skills.toString());
+      } else {
+        skillsSection.value = [];
       }
     } catch (e) {
       log(e.toString());
@@ -354,14 +362,16 @@ class ResumeController extends GetxController {
   // Delete the skills by id
   Future<void> deleteSkillsSection(SkillModel skill) async {
     try {
-      final data = await resumeBox.get('skills');
-      if (data != null) {
+      final data = await resumeBox.get('skills', defaultValue: []);
+      if (data.length > 0) {
         final List<SkillModel> skills =
             (data as List).map((e) => SkillModel.fromJson(e)).toList();
         final index = skills.indexWhere((element) => element.id == skill.id);
         if (index != -1) {
           skills.removeAt(index);
           await resumeBox.put('skills', skills.map((e) => e.toJson()).toList());
+          await getSkillsSection(); // Update the skills section
+          getResume();
         }
       }
     } catch (e) {
