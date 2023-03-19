@@ -10,6 +10,7 @@ class PrimaryTextField extends StatelessWidget {
     this.controller,
     this.suffix,
     this.initialValue,
+    this.maxLines,
   }) : super(key: key);
 
   final String? hintText;
@@ -17,6 +18,7 @@ class PrimaryTextField extends StatelessWidget {
   final TextEditingController? controller;
   final Widget? suffix;
   final String? initialValue;
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +36,7 @@ class PrimaryTextField extends StatelessWidget {
         TextFormField(
           initialValue: initialValue,
           controller: initialValue == null ? controller : null,
+          maxLines: maxLines ?? 1,
           decoration: InputDecoration(
             hintText: hintText ?? '',
             border: InputBorder.none,

@@ -62,7 +62,8 @@ class ProfilePage extends GetView<ResumeController> {
                       initialValue: controller.profileSection.value.designation,
                       hintText: 'e.g. Software Engineer',
                       labelText: 'Your Designation',
-                      controller: controller.emailTextEditingController.value,
+                      controller:
+                          controller.designationTextEditingController.value,
                     ),
                     // Email
                     const SizedBox(height: 20),

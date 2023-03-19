@@ -33,6 +33,13 @@ class ResumeController extends GetxController {
   final educationInstituteTextEditingController = TextEditingController().obs;
   final educationDurationTextEditingController = TextEditingController().obs;
 
+  // Experience Section
+  final experienceCompanyTextEditingController = TextEditingController().obs;
+  final experienceDesignationTextEditingController =
+      TextEditingController().obs;
+  final experienceDurationTextEditingController = TextEditingController().obs;
+  final experienceSummaryTextEditingController = TextEditingController().obs;
+
   final sectionIndex = 0.obs;
   final dragging = false.obs;
 
@@ -211,6 +218,9 @@ class ResumeController extends GetxController {
       } else {
         await resumeBox.put('experience', [experience.toJson()]);
       }
+      await getExperienceSection(); // Update the experience section
+      getResume();
+      Get.back();
     } catch (e) {
       log(e.toString());
     }
@@ -237,9 +247,10 @@ class ResumeController extends GetxController {
 
   // Update the experience by id
   Future<void> updateExperienceSection(ExperienceModel experience) async {
+    // if (experience.id == null) return;
     try {
-      final data = await resumeBox.get('experience');
-      if (data != null) {
+      final data = await resumeBox.get('experience', defaultValue: []);
+      if (data.length > 0) {
         final List<ExperienceModel> experiences =
             (data as List).map((e) => ExperienceModel.fromJson(e)).toList();
         final index =
@@ -248,6 +259,9 @@ class ResumeController extends GetxController {
           experiences[index] = experience;
           await resumeBox.put(
               'experience', experiences.map((e) => e.toJson()).toList());
+          await getExperienceSection(); // Update the experience section
+          getResume();
+          Get.back();
         }
       }
     } catch (e) {
@@ -268,6 +282,9 @@ class ResumeController extends GetxController {
           experiences.removeAt(index);
           await resumeBox.put(
               'experience', experiences.map((e) => e.toJson()).toList());
+
+          await getExperienceSection(); // Update the experience section
+          getResume();
         }
       }
     } catch (e) {

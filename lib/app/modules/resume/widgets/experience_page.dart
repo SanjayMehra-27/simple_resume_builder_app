@@ -4,9 +4,10 @@ import 'package:simple_resume_builder_app/app/constants/text_style_const/text_st
 
 import '../../../model/experience/experience_model.dart';
 import '../../../widgets/buttons/primary/primary_button.dart';
+import '../../../widgets/text_field/primary/primary_text_field.dart';
 import '../controllers/resume_controller.dart';
 
-class ExperiencePage extends StatelessWidget {
+class ExperiencePage extends GetView<ResumeController> {
   const ExperiencePage({Key? key}) : super(key: key);
 
   @override
@@ -38,45 +39,80 @@ class ExperiencePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Experience Card
-                Container(
-                  margin: const EdgeInsets.all(16),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 10,
-                        offset: Offset(0, 5),
+                Obx(
+                  () => Expanded(
+                    child: ListView.builder(
+                      itemCount: controller.experienceSection.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) => Container(
+                        margin: const EdgeInsets.all(16),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 10,
+                              offset: Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        // company name, duration, designation, summary
+                        child: ListTile(
+                          trailing: IconButton(
+                            onPressed: () {
+                              // Delete Experience
+                              controller.deleteExperienceSection(
+                                  controller.experienceSection[index]);
+                            },
+                            icon: const Icon(Icons.delete),
+                          ),
+                          onTap: () {
+                            // Edit Experience Bottom Sheet
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              constraints: const BoxConstraints(
+                                maxHeight: 570,
+                              ),
+                              useRootNavigator: true,
+                              builder: (context) => AddExperienceBottomsheet(
+                                isEdit: true,
+                                experience: controller.experienceSection[index],
+                              ),
+                            );
+                          },
+                          isThreeLine: true,
+                          title: Text(
+                            controller.experienceSection[index].designation ??
+                                '',
+                            style: AppTextStyleConst.heading,
+                          ),
+                          contentPadding: const EdgeInsets.all(16),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                controller.experienceSection[index].company ??
+                                    '',
+                                style: AppTextStyleConst.title2,
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                controller.experienceSection[index].duration ??
+                                    '',
+                                style: AppTextStyleConst.subtitle,
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                controller
+                                        .experienceSection[index].description ??
+                                    '',
+                                style: AppTextStyleConst.caption,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ],
-                  ),
-                  // company name, duration, designation, summary
-                  child: ListTile(
-                    onLongPress: () {},
-                    isThreeLine: true,
-                    title: const Text(
-                      'Software Engineer',
-                      style: AppTextStyleConst.heading,
-                    ),
-                    contentPadding: const EdgeInsets.all(16),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'Google',
-                          style: AppTextStyleConst.title2,
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Aug 2017 - Aug 2021',
-                          style: AppTextStyleConst.subtitle,
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Worked on Flutter, Firebase, and Google Cloud',
-                          style: AppTextStyleConst.caption,
-                        ),
-                      ],
                     ),
                   ),
                 ),
@@ -87,10 +123,15 @@ class ExperiencePage extends StatelessWidget {
                 PrimaryButton(
                   text: 'Add Experience',
                   icon: const Icon(Icons.add),
-                  onPressed: () {
+                  onPressed: () async {
                     // Add Experience Bottom Sheet
-                    showModalBottomSheet(
+                    await showModalBottomSheet(
                       context: context,
+                      isScrollControlled: true,
+                      constraints: const BoxConstraints(
+                        maxHeight: 570,
+                      ),
+                      useRootNavigator: true,
                       builder: (context) => const AddExperienceBottomsheet(),
                     );
                   },
@@ -105,13 +146,16 @@ class ExperiencePage extends StatelessWidget {
 class AddExperienceBottomsheet extends GetView<ResumeController> {
   const AddExperienceBottomsheet({
     Key? key,
+    this.isEdit = false,
+    this.experience,
   }) : super(key: key);
+  final bool? isEdit;
+  final ExperienceModel? experience;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        height: 800,
         width: double.infinity,
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -121,99 +165,95 @@ class AddExperienceBottomsheet extends GetView<ResumeController> {
           ),
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.max,
           children: [
             const SizedBox(height: 20),
-            const Text(
-              'Add Experience',
+            Text(
+              isEdit == true ? 'Update' : 'Add' ' Experience',
               style: AppTextStyleConst.heading,
             ),
             // Company Name, Designation, Duration, Summary
             const SizedBox(height: 20),
-            const PrimaryTextField(
+            PrimaryTextField(
+              initialValue: experience?.company,
               hintText: 'e.g. Google',
               labelText: 'Company Name',
+              controller:
+                  controller.experienceCompanyTextEditingController.value,
             ),
             const SizedBox(height: 20),
-            const PrimaryTextField(
+            PrimaryTextField(
+              initialValue: experience?.designation,
               hintText: 'e.g. Software Engineer',
               labelText: 'Designation',
+              controller:
+                  controller.experienceDesignationTextEditingController.value,
             ),
             const SizedBox(height: 20),
-            const PrimaryTextField(
+            PrimaryTextField(
+              initialValue: experience?.duration,
               hintText: 'e.g. Aug 2017 - Aug 2021',
               labelText: 'Duration',
+              controller:
+                  controller.experienceDurationTextEditingController.value,
             ),
             const SizedBox(height: 20),
-            const PrimaryTextField(
+            PrimaryTextField(
+              initialValue: experience?.description,
               hintText: 'e.g. Worked on Flutter, Firebase, and Google Cloud',
               labelText: 'Summary',
+              maxLines: 2,
+              controller:
+                  controller.experienceSummaryTextEditingController.value,
             ),
             PrimaryButton(
-              text: 'Save',
+              text: isEdit == true ? 'Update' : 'Save',
               icon: const Icon(Icons.save),
               onPressed: () {
-                // Save Experience
-                controller.addExperienceSection(
-                  ExperienceModel(
-                    company: 'ABC Company',
-                    designation: 'Software Engineer',
-                    duration: '2019 - Present',
-                    description:
-                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-                  ),
-                  // ExperienceModel(
-                  //   company: 'XYZ Company',
-                  //   designation: 'Software Engineer',
-                  //   duration: '2018 - 2019',
-                  //   description:
-                  //       'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-                  // ),
-                );
+                if (isEdit == true) {
+                  controller.updateExperienceSection(
+                    ExperienceModel(
+                      id: experience?.id,
+                      company: controller
+                          .experienceCompanyTextEditingController.value.text,
+                      designation: controller
+                          .experienceDesignationTextEditingController
+                          .value
+                          .text,
+                      duration: controller
+                          .experienceDurationTextEditingController.value.text,
+                      description: controller
+                          .experienceSummaryTextEditingController.value.text,
+                    ),
+                  );
+                } else {
+                  controller.addExperienceSection(
+                    ExperienceModel(
+                      company: controller
+                          .experienceCompanyTextEditingController.value.text,
+                      designation: controller
+                          .experienceDesignationTextEditingController
+                          .value
+                          .text,
+                      duration: controller
+                          .experienceDurationTextEditingController.value.text,
+                      description: controller
+                          .experienceSummaryTextEditingController.value.text,
+                    ),
+                    // ExperienceModel(
+                    //   company: 'XYZ Company',
+                    //   designation: 'Software Engineer',
+                    //   duration: '2018 - 2019',
+                    //   description:
+                    //       'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                    // ),
+                  );
+                }
               },
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class PrimaryTextField extends StatelessWidget {
-  const PrimaryTextField({
-    Key? key,
-    this.hintText,
-    this.labelText,
-    this.controller,
-  }) : super(key: key);
-
-  final String? hintText;
-  final String? labelText;
-  final TextEditingController? controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 22),
-          child: Text(
-            labelText ?? 'Label',
-            style: AppTextStyleConst.title,
-          ),
-        ),
-        const SizedBox(height: 10),
-        TextFormField(
-          decoration: InputDecoration(
-            hintText: hintText ?? '',
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 25,
-              vertical: 15,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
