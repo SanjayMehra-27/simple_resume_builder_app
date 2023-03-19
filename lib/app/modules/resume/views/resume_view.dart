@@ -1,9 +1,9 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simple_resume_builder_app/app/constants/text_style_const/text_style_const.dart';
 import '../controllers/resume_controller.dart';
 import 'add_details_view.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class ResumeView extends GetView<ResumeController> {
   const ResumeView({Key? key}) : super(key: key);
@@ -48,23 +48,17 @@ class ResumeView extends GetView<ResumeController> {
                       profile: controller.resumeItems[0].data as ProfileModel),
                 ),
                 Expanded(
-                  child: GridView.builder(
-                    // scrollDirection: Axis.vertical,
-                    padding: const EdgeInsets.all(8),
-                    shrinkWrap: true,
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 400,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                    ),
-                    dragStartBehavior: DragStartBehavior.down,
-                    itemCount: controller.resumeItems.length - 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      final item = controller.resumeItems[index + 1];
-                      controller.sectionIndex.value = index + 1;
-                      return Draggable(
-                          data: index + 1,
+                    child: StaggeredGrid.count(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 10,
+                  axisDirection: AxisDirection.down,
+                  children: [
+                    for (int i = 1; i < 6; i++)
+                      StaggeredGridTile.fit(
+                        crossAxisCellCount: 1,
+                        child: Draggable(
+                          data: i,
                           onDragStarted: () {
                             controller.dragging.value = true;
                           },
@@ -76,65 +70,20 @@ class ResumeView extends GetView<ResumeController> {
                           onDraggableCanceled: (velocity, offset) =>
                               controller.dragging.value = false,
                           feedback: Obx(() => controller.dragging.value == true
-                              ? Container(
-                                  width: 200,
-                                  height: 200,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    color: Colors.white,
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 10,
-                                        offset: Offset(0, 5),
-                                      ),
-                                    ],
-                                  ),
-                                  padding: const EdgeInsets.all(8),
-                                  child: Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      item.name,
-                                      style: AppTextStyleConst.heading.copyWith(
-                                          color: Colors.black,
-                                          decoration: TextDecoration.none),
-                                    ),
-                                  ),
-                                )
-                              : _buildGridItem(item, isFeedback: false)),
-                          childWhenDragging:
-                              Obx(() => controller.dragging.value == true
-                                  ? Container(
-                                      width: 200,
-                                      height: 200,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        color: Colors.white,
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.black12,
-                                            blurRadius: 10,
-                                            offset: Offset(0, 5),
-                                          ),
-                                        ],
-                                      ),
-                                      padding: const EdgeInsets.all(8),
-                                      child: const Align(
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          'Hey! where you taking me?',
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                      ),
-                                    )
-                                  : _buildGridItem(item, isFeedback: false)),
+                              ? DraggingFeedbackWidget(
+                                  controller: controller, i: i)
+                              : _buildGridItem(controller.resumeItems[i],
+                                  isFeedback: false)),
+                          childWhenDragging: const SizedBox.shrink(),
                           child: Obx(
-                            () => _buildGridItem(item,
+                            () => _buildGridItem(controller.resumeItems[i],
                                 isFeedback: controller.dragging.value),
-                          ));
-                    },
-                  ),
-                ),
+                          ),
+                        ),
+                      ),
+                  ],
+                )),
+                // ),
               ],
             ),
           ),
@@ -183,6 +132,85 @@ class ResumeView extends GetView<ResumeController> {
           final targetIndex = controller.resumeItems.indexOf(item);
           controller.onSwitch(draggedIndex, targetIndex);
         },
+      ),
+    );
+  }
+}
+
+class DraggingChildWidget extends StatelessWidget {
+  const DraggingChildWidget({
+    Key? key,
+    required this.controller,
+    required this.i,
+  }) : super(key: key);
+
+  final ResumeController controller;
+  final int i;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 200,
+      height: 200,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.white,
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(8),
+      child: Align(
+        alignment: Alignment.center,
+        child: Text(
+          controller.resumeItems[i].name,
+          style: const TextStyle(color: Colors.black),
+        ),
+      ),
+    );
+  }
+}
+
+class DraggingFeedbackWidget extends StatelessWidget {
+  const DraggingFeedbackWidget({
+    Key? key,
+    required this.controller,
+    required this.i,
+  }) : super(key: key);
+
+  final ResumeController controller;
+  final int i;
+
+  @override
+  Widget build(BuildContext context) {
+    return IntrinsicHeight(
+      child: Container(
+        width: 200,
+        height: 200,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: Colors.white,
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, 5),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(8),
+        child: Align(
+          alignment: Alignment.center,
+          child: Text(
+            controller.resumeItems[i].name,
+            style: AppTextStyleConst.heading
+                .copyWith(color: Colors.black, decoration: TextDecoration.none),
+          ),
+        ),
       ),
     );
   }
@@ -333,14 +361,14 @@ class EducationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: education.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
+    return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: education.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
+          child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -363,9 +391,9 @@ class EducationWidget extends StatelessWidget {
                 ),
               ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -379,18 +407,37 @@ class ExperienceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        // shrinkWrap: true,
-        itemCount: experience.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Text(
-            experience[index].company ?? '',
-            style: AppTextStyleConst.subtitle,
-          );
-        },
-      ),
+    return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: experience.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Company
+              Text(
+                experience[index].company ?? '',
+                style: AppTextStyleConst.subtitle,
+              ),
+
+              // Duration
+              Text(
+                experience[index].duration ?? '',
+                style: AppTextStyleConst.caption,
+              ),
+
+              // Description
+              Text(
+                experience[index].description ?? '',
+                style: AppTextStyleConst.body,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -404,18 +451,16 @@ class SkillsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        // shrinkWrap: true,
-        itemCount: skills.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Text(
-            skills[index].skill ?? '',
-            style: AppTextStyleConst.subtitle,
-          );
-        },
-      ),
+    return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: skills.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Text(
+          skills[index].skill ?? '',
+          style: AppTextStyleConst.body,
+        );
+      },
     );
   }
 }
@@ -429,18 +474,16 @@ class LanguagesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        // shrinkWrap: true,
-        itemCount: languages.length ?? 0,
-        itemBuilder: (BuildContext context, int index) {
-          return Text(
-            languages[index].language ?? '',
-            style: AppTextStyleConst.subtitle,
-          );
-        },
-      ),
+    return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: languages.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Text(
+          languages[index].language ?? '',
+          style: AppTextStyleConst.body,
+        );
+      },
     );
   }
 }
@@ -454,18 +497,37 @@ class ProjectsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        // shrinkWrap: true,
-        itemCount: projects.length ?? 0,
-        itemBuilder: (BuildContext context, int index) {
-          return Text(
-            projects[index].project ?? '',
-            style: AppTextStyleConst.subtitle,
-          );
-        },
-      ),
+    return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: projects.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Project Name
+              Text(
+                projects[index].project ?? '',
+                style: AppTextStyleConst.subtitle,
+              ),
+
+              // Duration
+              Text(
+                projects[index].year ?? '',
+                style: AppTextStyleConst.caption,
+              ),
+
+              // Description
+              Text(
+                projects[index].description ?? '',
+                style: AppTextStyleConst.body,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
