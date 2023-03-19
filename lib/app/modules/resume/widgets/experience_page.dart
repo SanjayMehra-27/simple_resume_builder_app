@@ -4,8 +4,10 @@ import 'package:simple_resume_builder_app/app/constants/text_style_const/text_st
 
 import '../../../model/experience/experience_model.dart';
 import '../../../widgets/buttons/primary/primary_button.dart';
+import '../../../widgets/empty_screen/empty_screen.dart';
 import '../../../widgets/text_field/primary/primary_text_field.dart';
 import '../controllers/resume_controller.dart';
+import 'education_page.dart';
 
 class ExperiencePage extends GetView<ResumeController> {
   const ExperiencePage({Key? key}) : super(key: key);
@@ -34,109 +36,120 @@ class ExperiencePage extends GetView<ResumeController> {
           ),
         ),
         body: SafeArea(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Experience Card
-                Obx(
-                  () => Expanded(
-                    child: ListView.builder(
-                      itemCount: controller.experienceSection.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) => Container(
-                        margin: const EdgeInsets.all(16),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 10,
-                              offset: Offset(0, 5),
+          child: controller.experienceSection.isEmpty
+              ? const EmptyScreenWidget(
+                  text: 'No Experience Added',
+                  description:
+                      'Add your experience to make your resume more attractive')
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                      // Experience Card
+                      Obx(
+                        () => Expanded(
+                          child: ListView.builder(
+                            itemCount: controller.experienceSection.length,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) => Container(
+                              margin: const EdgeInsets.all(16),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 10,
+                                    offset: Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              // company name, duration, designation, summary
+                              child: ListTile(
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    // Delete Experience
+                                    controller.deleteExperienceSection(
+                                        controller.experienceSection[index]);
+                                  },
+                                  icon: const Icon(Icons.delete),
+                                ),
+                                onTap: () {
+                                  // Edit Experience Bottom Sheet
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    constraints: const BoxConstraints(
+                                      maxHeight: 570,
+                                    ),
+                                    useRootNavigator: true,
+                                    builder: (context) =>
+                                        AddExperienceBottomsheet(
+                                      isEdit: true,
+                                      experience:
+                                          controller.experienceSection[index],
+                                    ),
+                                  );
+                                },
+                                isThreeLine: true,
+                                title: Text(
+                                  controller.experienceSection[index]
+                                          .designation ??
+                                      '',
+                                  style: AppTextStyleConst.heading,
+                                ),
+                                contentPadding: const EdgeInsets.all(16),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      controller.experienceSection[index]
+                                              .company ??
+                                          '',
+                                      style: AppTextStyleConst.title2,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      controller.experienceSection[index]
+                                              .duration ??
+                                          '',
+                                      style: AppTextStyleConst.subtitle,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      controller.experienceSection[index]
+                                              .description ??
+                                          '',
+                                      style: AppTextStyleConst.caption,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ],
-                        ),
-                        // company name, duration, designation, summary
-                        child: ListTile(
-                          trailing: IconButton(
-                            onPressed: () {
-                              // Delete Experience
-                              controller.deleteExperienceSection(
-                                  controller.experienceSection[index]);
-                            },
-                            icon: const Icon(Icons.delete),
-                          ),
-                          onTap: () {
-                            // Edit Experience Bottom Sheet
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              constraints: const BoxConstraints(
-                                maxHeight: 570,
-                              ),
-                              useRootNavigator: true,
-                              builder: (context) => AddExperienceBottomsheet(
-                                isEdit: true,
-                                experience: controller.experienceSection[index],
-                              ),
-                            );
-                          },
-                          isThreeLine: true,
-                          title: Text(
-                            controller.experienceSection[index].designation ??
-                                '',
-                            style: AppTextStyleConst.heading,
-                          ),
-                          contentPadding: const EdgeInsets.all(16),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                controller.experienceSection[index].company ??
-                                    '',
-                                style: AppTextStyleConst.title2,
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                controller.experienceSection[index].duration ??
-                                    '',
-                                style: AppTextStyleConst.subtitle,
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                controller
-                                        .experienceSection[index].description ??
-                                    '',
-                                style: AppTextStyleConst.caption,
-                              ),
-                            ],
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
 
-                // Add Experience Button
-                const Expanded(child: SizedBox()),
-                const SizedBox(height: 20),
-                PrimaryButton(
-                  text: 'Add Experience',
-                  icon: const Icon(Icons.add),
-                  onPressed: () async {
-                    // Add Experience Bottom Sheet
-                    await showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      constraints: const BoxConstraints(
-                        maxHeight: 570,
+                      // Add Experience Button
+                      const Expanded(child: SizedBox()),
+                      const SizedBox(height: 20),
+                      PrimaryButton(
+                        text: 'Add Experience',
+                        icon: const Icon(Icons.add),
+                        onPressed: () async {
+                          // Add Experience Bottom Sheet
+                          await showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            constraints: const BoxConstraints(
+                              maxHeight: 570,
+                            ),
+                            useRootNavigator: true,
+                            builder: (context) =>
+                                const AddExperienceBottomsheet(),
+                          );
+                        },
                       ),
-                      useRootNavigator: true,
-                      builder: (context) => const AddExperienceBottomsheet(),
-                    );
-                  },
-                ),
-              ]),
+                    ]),
         ),
       ),
     );
