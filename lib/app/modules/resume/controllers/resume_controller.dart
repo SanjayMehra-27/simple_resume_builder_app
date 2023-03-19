@@ -49,6 +49,10 @@ class ResumeController extends GetxController {
   final projectsTechStackTextEditingController = TextEditingController().obs;
   final projectsYearTextEditingController = TextEditingController().obs;
 
+  // Languages Section
+  final languagesTextEditingController = TextEditingController().obs;
+  final languagesProficiency = 'Beginner'.obs;
+
   final sectionIndex = 0.obs;
   final dragging = false.obs;
 
@@ -497,6 +501,8 @@ class ResumeController extends GetxController {
       } else {
         await resumeBox.put('languages', [language.toJson()]);
       }
+      await getLanguages(); // Update the languages section
+      getResume();
     } catch (e) {
       log(e.toString());
     }
@@ -512,6 +518,8 @@ class ResumeController extends GetxController {
             (data as List).map((e) => LanguageModel.fromJson(e)).toList();
         languagesSection.value = languages;
         log(languages.toString());
+      } else {
+        languagesSection.value = [];
       }
     } catch (e) {
       log(e.toString());
@@ -553,6 +561,8 @@ class ResumeController extends GetxController {
           languages.removeAt(index);
           await resumeBox.put(
               'languages', languages.map((e) => e.toJson()).toList());
+          await getLanguages(); // Update the languages section
+          getResume();
         }
       }
     } catch (e) {

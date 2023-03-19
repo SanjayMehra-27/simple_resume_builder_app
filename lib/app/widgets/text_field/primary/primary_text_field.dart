@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../constants/text_style_const/text_style_const.dart';
 
 class PrimaryTextField extends StatelessWidget {
-  const PrimaryTextField({
+  PrimaryTextField({
     Key? key,
     this.hintText,
     this.labelText,
@@ -17,7 +17,7 @@ class PrimaryTextField extends StatelessWidget {
   final String? labelText;
   final TextEditingController? controller;
   final Widget? suffix;
-  final String? initialValue;
+  String? initialValue;
   final int? maxLines;
 
   @override
@@ -38,7 +38,7 @@ class PrimaryTextField extends StatelessWidget {
           controller:
               initialValue == null || initialValue == '' ? controller : null,
           onChanged: (value) {
-            controller?.text = value;
+            initialValue = null;
           },
           maxLines: maxLines ?? 1,
           decoration: InputDecoration(

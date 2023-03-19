@@ -39,32 +39,66 @@ class LanguagesPage extends GetView<ResumeController> {
               children: [
                 const SizedBox(height: 50),
                 // Languages
-                const PrimaryTextField(
+                PrimaryTextField(
                   hintText: 'e.g. English, Hindi, etc',
                   labelText: 'You Speak ...',
+                  controller: controller.languagesTextEditingController.value,
                 ),
                 const SizedBox(height: 20),
                 // Proficiency Level [Beginner, Intermediate, Advanced] [Selectable Chips]
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    const Chip(
-                      label: Text('Beginner'),
-                      backgroundColor: Colors.green,
-                      labelStyle: TextStyle(color: Colors.white),
-                      elevation: 0.1,
-                    ),
-                    Chip(
-                      label: const Text('Intermediate'),
-                      backgroundColor: Colors.grey[400],
-                      labelStyle: const TextStyle(color: Colors.white),
-                    ),
-                    Chip(
-                      label: const Text('Advanced'),
-                      backgroundColor: Colors.grey[400],
-                      labelStyle: const TextStyle(color: Colors.white),
-                    ),
-                  ],
+                Obx(
+                  () => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          // Select Beginner
+                          controller.languagesProficiency.value = 'Beginner';
+                        },
+                        child: Chip(
+                          label: const Text('Beginner'),
+                          backgroundColor:
+                              controller.languagesProficiency.value ==
+                                      'Beginner'
+                                  ? Colors.green
+                                  : Colors.grey[400],
+                          labelStyle: const TextStyle(color: Colors.white),
+                          elevation: 0.1,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          // Select Intermediate
+                          controller.languagesProficiency.value =
+                              'Intermediate';
+                        },
+                        child: Chip(
+                          label: const Text('Intermediate'),
+                          backgroundColor:
+                              controller.languagesProficiency.value ==
+                                      'Intermediate'
+                                  ? Colors.green
+                                  : Colors.grey[400],
+                          labelStyle: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          // Select Advanced
+                          controller.languagesProficiency.value = 'Advanced';
+                        },
+                        child: Chip(
+                          label: const Text('Advanced'),
+                          backgroundColor:
+                              controller.languagesProficiency.value ==
+                                      'Advanced'
+                                  ? Colors.green
+                                  : Colors.grey[400],
+                          labelStyle: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
 
                 const SizedBox(height: 20),
@@ -75,32 +109,40 @@ class LanguagesPage extends GetView<ResumeController> {
                   onPressed: () {
                     controller.addLanguageSection(
                       LanguageModel(
-                        language: 'English',
-                        level: 'Beginner',
+                        language: controller
+                            .languagesTextEditingController.value.text,
+                        level: controller.languagesProficiency.value,
                       ),
                     );
-                    // Go back to the previous page
-                    // Navigator.pop(context);
+                    // Clear the text field
+                    controller.languagesTextEditingController.value.clear();
                   },
                 ),
 
                 const SizedBox(height: 20),
                 // Languages List
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: 5,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: const Text('English'),
-                        subtitle: const Text('Advanced'),
-                        trailing: IconButton(
-                          onPressed: () {
-                            // Delete Languages
-                          },
-                          icon: const Icon(Icons.delete),
-                        ),
-                      );
-                    },
+                Obx(
+                  () => Expanded(
+                    child: ListView.builder(
+                      itemCount: controller.languagesSection.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(
+                              controller.languagesSection[index].language ??
+                                  ''),
+                          subtitle: Text(
+                              controller.languagesSection[index].level ?? ''),
+                          trailing: IconButton(
+                            onPressed: () {
+                              // Delete Languages
+                              controller.deleteLanguageSection(
+                                  controller.languagesSection[index]);
+                            },
+                            icon: const Icon(Icons.delete),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
 
