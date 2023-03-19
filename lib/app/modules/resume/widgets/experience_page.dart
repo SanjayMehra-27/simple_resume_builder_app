@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simple_resume_builder_app/app/constants/text_style_const/text_style_const.dart';
 
+import '../../../model/experience/experience_model.dart';
 import '../../../widgets/buttons/primary/primary_button.dart';
+import '../controllers/resume_controller.dart';
 
 class ExperiencePage extends StatelessWidget {
   const ExperiencePage({Key? key}) : super(key: key);
@@ -100,7 +102,7 @@ class ExperiencePage extends StatelessWidget {
   }
 }
 
-class AddExperienceBottomsheet extends StatelessWidget {
+class AddExperienceBottomsheet extends GetView<ResumeController> {
   const AddExperienceBottomsheet({
     Key? key,
   }) : super(key: key);
@@ -151,7 +153,22 @@ class AddExperienceBottomsheet extends StatelessWidget {
               icon: const Icon(Icons.save),
               onPressed: () {
                 // Save Experience
-                Get.back();
+                controller.addExperienceSection(
+                  ExperienceModel(
+                    company: 'ABC Company',
+                    designation: 'Software Engineer',
+                    duration: '2019 - Present',
+                    description:
+                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                  ),
+                  // ExperienceModel(
+                  //   company: 'XYZ Company',
+                  //   designation: 'Software Engineer',
+                  //   duration: '2018 - 2019',
+                  //   description:
+                  //       'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                  // ),
+                );
               },
             ),
           ],

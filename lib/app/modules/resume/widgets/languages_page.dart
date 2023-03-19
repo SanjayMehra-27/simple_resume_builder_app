@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simple_resume_builder_app/app/constants/text_style_const/text_style_const.dart';
 
+import '../../../model/language/language_model.dart';
 import '../../../widgets/buttons/primary/primary_button.dart';
 import '../../../widgets/text_field/primary/primary_text_field.dart';
+import '../controllers/resume_controller.dart';
 
-class LanguagesPage extends StatelessWidget {
+class LanguagesPage extends GetView<ResumeController> {
   const LanguagesPage({Key? key}) : super(key: key);
 
   @override
@@ -71,8 +73,14 @@ class LanguagesPage extends StatelessWidget {
                   color: Colors.green,
                   icon: const Icon(Icons.add),
                   onPressed: () {
+                    controller.addLanguageSection(
+                      LanguageModel(
+                        language: 'English',
+                        level: 'Beginner',
+                      ),
+                    );
                     // Go back to the previous page
-                    Navigator.pop(context);
+                    // Navigator.pop(context);
                   },
                 ),
 

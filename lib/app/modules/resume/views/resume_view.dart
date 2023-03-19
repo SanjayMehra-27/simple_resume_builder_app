@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simple_resume_builder_app/app/constants/text_style_const/text_style_const.dart';
+import '../../../model/education/education_model.dart';
+import '../../../model/experience/experience_model.dart';
+import '../../../model/language/language_model.dart';
+import '../../../model/profile/profile_model.dart';
+import '../../../model/project/project_model.dart';
+import '../../../model/resume_item/resume_item_model.dart';
+import '../../../model/skill/skill_model.dart';
 import '../controllers/resume_controller.dart';
 import 'add_details_view.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -37,60 +44,77 @@ class ResumeView extends GetView<ResumeController> {
             backgroundColor: Colors.white,
             elevation: 0,
           ),
-          body: SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ProfileWidget(
-                      profile: controller.resumeItems[0].data as ProfileModel),
-                ),
-                Expanded(
-                    child: StaggeredGrid.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 10,
-                  axisDirection: AxisDirection.down,
-                  children: [
-                    for (int i = 1; i < 6; i++)
-                      StaggeredGridTile.fit(
-                        crossAxisCellCount: 1,
-                        child: Draggable(
-                          data: i,
-                          onDragStarted: () {
-                            controller.dragging.value = true;
-                          },
-                          onDragEnd: (details) {
-                            controller.dragging.value = false;
-                          },
-                          onDragCompleted: () =>
-                              controller.dragging.value = false,
-                          onDraggableCanceled: (velocity, offset) =>
-                              controller.dragging.value = false,
-                          feedback: Obx(() => controller.dragging.value == true
-                              ? DraggingFeedbackWidget(
-                                  controller: controller, i: i)
-                              : _buildGridItem(controller.resumeItems[i],
-                                  isFeedback: false)),
-                          childWhenDragging: const SizedBox.shrink(),
+          body: controller.isLoading.value
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : SafeArea(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
                           child: Obx(
-                            () => _buildGridItem(controller.resumeItems[i],
-                                isFeedback: controller.dragging.value),
+                            () => ProfileWidget(
+                                profile:
+                                    controller.profileSection.value.name != null
+                                        ? controller.profileSection.value
+                                        : ProfileModel()),
                           ),
                         ),
-                      ),
-                  ],
-                )),
-                // ),
-              ],
-            ),
-          ),
+                        SingleChildScrollView(
+                          child: Expanded(
+                              child: StaggeredGrid.count(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 8,
+                            crossAxisSpacing: 10,
+                            axisDirection: AxisDirection.down,
+                            children: [
+                              for (int i = 1; i < 6; i++)
+                                StaggeredGridTile.fit(
+                                  crossAxisCellCount: 1,
+                                  child: Draggable(
+                                    data: i,
+                                    onDragStarted: () {
+                                      controller.dragging.value = true;
+                                    },
+                                    onDragEnd: (details) {
+                                      controller.dragging.value = false;
+                                    },
+                                    onDragCompleted: () =>
+                                        controller.dragging.value = false,
+                                    onDraggableCanceled: (velocity, offset) =>
+                                        controller.dragging.value = false,
+                                    feedback: Obx(() =>
+                                        controller.dragging.value == true
+                                            ? DraggingFeedbackWidget(
+                                                controller: controller, i: i)
+                                            : _buildGridItem(
+                                                controller.resumeItems[i],
+                                                isFeedback: false)),
+                                    childWhenDragging: const SizedBox.shrink(),
+                                    child: Obx(
+                                      () => _buildGridItem(
+                                          controller.resumeItems[i],
+                                          isFeedback:
+                                              controller.dragging.value),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          )),
+                        ),
+                        // ),
+                      ],
+                    ),
+                  ),
+                ),
         ));
   }
 
-  Widget _buildGridItem(ResumeItem item, {bool isFeedback = false}) {
+  Widget _buildGridItem(ResumeItemModel item, {bool isFeedback = false}) {
     return Material(
       elevation: isFeedback ? 0.5 : 0,
       child: DragTarget<int>(
@@ -221,7 +245,7 @@ class ItemBuilder extends StatelessWidget {
     Key? key,
     required this.item,
   }) : super(key: key);
-  final ResumeItem item;
+  final ResumeItemModel item;
 
   @override
   Widget build(BuildContext context) {
@@ -257,7 +281,7 @@ class ItemBuilder extends StatelessWidget {
   }
 
   // return widget based on the name of item [Profile, Education, Experience, Skills, Languages, Projects]
-  Widget _getResumeItem(ResumeItem item) {
+  Widget _getResumeItem(ResumeItemModel item) {
     switch (item.name) {
       case 'Profile':
         return ProfileWidget(profile: item.data as ProfileModel);
@@ -268,9 +292,9 @@ class ItemBuilder extends StatelessWidget {
       case 'Skills':
         return SkillsWidget(skills: item.data as List<SkillModel>);
       case 'Languages':
-        return LanguagesWidget(languages: item.data as List<LanguagesModel>);
+        return LanguagesWidget(languages: item.data as List<LanguageModel>);
       case 'Projects':
-        return ProjectsWidget(projects: item.data as List<ProjectsModel>);
+        return ProjectsWidget(projects: item.data as List<ProjectModel>);
       default:
         return const Text(
           'Empty',
@@ -470,7 +494,7 @@ class LanguagesWidget extends StatelessWidget {
     Key? key,
     required this.languages,
   }) : super(key: key);
-  final List<LanguagesModel> languages;
+  final List<LanguageModel> languages;
 
   @override
   Widget build(BuildContext context) {
@@ -493,7 +517,7 @@ class ProjectsWidget extends StatelessWidget {
     Key? key,
     required this.projects,
   }) : super(key: key);
-  final List<ProjectsModel> projects;
+  final List<ProjectModel> projects;
 
   @override
   Widget build(BuildContext context) {

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simple_resume_builder_app/app/constants/text_style_const/text_style_const.dart';
+import 'package:simple_resume_builder_app/app/modules/resume/controllers/resume_controller.dart';
 
+import '../../../model/skill/skill_model.dart';
 import '../../../widgets/buttons/primary/primary_button.dart';
 import '../../../widgets/text_field/primary/primary_text_field.dart';
 
-class SkillsPage extends StatelessWidget {
+class SkillsPage extends GetView<ResumeController> {
   const SkillsPage({Key? key}) : super(key: key);
 
   @override
@@ -43,7 +45,12 @@ class SkillsPage extends StatelessWidget {
                     height: 35,
                     padding: const EdgeInsets.all(5),
                     child: FloatingActionButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        controller.addSkillsSection(SkillModel(
+                          id: 1,
+                          skill: 'Flutter',
+                        ));
+                      },
                       child: const Icon(Icons.add),
                       backgroundColor: Colors.green,
                       elevation: 0.1,
@@ -88,7 +95,7 @@ class SkillsPage extends StatelessWidget {
   }
 }
 
-class AddSkillsBottomsheet extends StatelessWidget {
+class AddSkillsBottomsheet extends GetView<ResumeController> {
   const AddSkillsBottomsheet({
     Key? key,
   }) : super(key: key);
@@ -133,7 +140,10 @@ class AddSkillsBottomsheet extends StatelessWidget {
             icon: const Icon(Icons.save),
             onPressed: () {
               // Save Skills
-              Get.back();
+              controller.addSkillsSection(SkillModel(
+                id: 1,
+                skill: 'Flutter',
+              ));
             },
           ),
         ],

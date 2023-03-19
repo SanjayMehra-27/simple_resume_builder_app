@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simple_resume_builder_app/app/constants/text_style_const/text_style_const.dart';
 
+import '../../../model/education/education_model.dart';
 import '../../../widgets/buttons/primary/primary_button.dart';
 import '../../../widgets/text_field/primary/primary_text_field.dart';
+import '../controllers/resume_controller.dart';
 
-class EducationPage extends StatelessWidget {
+class EducationPage extends GetView<ResumeController> {
   const EducationPage({Key? key}) : super(key: key);
 
   @override
@@ -94,7 +96,7 @@ class EducationPage extends StatelessWidget {
   }
 }
 
-class AddEducationBottomsheet extends StatelessWidget {
+class AddEducationBottomsheet extends GetView<ResumeController> {
   const AddEducationBottomsheet({
     Key? key,
   }) : super(key: key);
@@ -139,7 +141,22 @@ class AddEducationBottomsheet extends StatelessWidget {
             icon: const Icon(Icons.save),
             onPressed: () {
               // Save Education
-              Get.back();
+              controller.addEducationSection(EducationModel(
+                institute: 'TCST University',
+                degree: 'B.Tech',
+                duration: '2015 - 2019',
+              ));
+
+              //  EducationModel(
+              //   institute: 'XYZ School',
+              //   degree: 'HSC',
+              //   duration: '2013 - 2015',
+              // ),
+              // EducationModel(
+              //   institute: 'ABC School',
+              //   degree: 'SSC',
+              //   duration: '2011 - 2013',
+              // ),
             },
           ),
         ],

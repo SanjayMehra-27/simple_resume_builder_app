@@ -1,265 +1,586 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:simple_resume_builder_app/app/model/language/language_model.dart';
+import 'package:simple_resume_builder_app/app/model/resume_item/resume_item_model.dart';
 
-class ResumeModel {
-  final ProfileModel? profile;
-  final List<EducationModel>? education;
-  final List<ExperienceModel>? experience;
-  final List<SkillModel>? skills;
-  final List<LanguagesModel>? languages;
-  final List<ProjectsModel>? projects;
-
-  ResumeModel({
-    this.profile,
-    this.education,
-    this.experience,
-    this.skills,
-    this.languages,
-    this.projects,
-  });
-}
-
-class ResumeItem {
-  final int id;
-  final String name;
-  final Object? data;
-
-  ResumeItem({
-    required this.id,
-    required this.name,
-    this.data,
-  });
-}
-
-// Profile Model [image, name, email, phone, address, designation]
-class ProfileModel {
-  final String? image;
-  final String? name;
-  final String? email;
-  final String? phone;
-  final String? address;
-  final String? designation;
-
-  ProfileModel({
-    this.image,
-    this.name,
-    this.email,
-    this.phone,
-    this.address,
-    this.designation,
-  });
-}
-
-// Education Model [institute, degree, duration]
-class EducationModel {
-  final String? institute;
-  final String? degree;
-  final String? duration;
-
-  EducationModel({
-    this.institute,
-    this.degree,
-    this.duration,
-  });
-}
-
-// Experience Model [company, designation, duration, description]
-class ExperienceModel {
-  final String? company;
-  final String? designation;
-  final String? duration;
-  final String? description;
-
-  ExperienceModel({
-    this.company,
-    this.designation,
-    this.duration,
-    this.description,
-  });
-}
-
-// Skills Model [skill, level]
-class SkillModel {
-  final int? id;
-  final String? skill;
-
-  SkillModel({
-    this.id,
-    this.skill,
-  });
-}
-
-// Languages Model [language, level]
-class LanguagesModel {
-  final String? language;
-  final String? level;
-
-  LanguagesModel({
-    this.language,
-    this.level,
-  });
-}
-
-// Projects Model [project, description, year]
-class ProjectsModel {
-  final String? project;
-  final String? description;
-  final String? year;
-
-  ProjectsModel({
-    this.project,
-    this.description,
-    this.year,
-  });
-}
+import '../../../constants/app_constatnt.dart';
+import '../../../model/education/education_model.dart';
+import '../../../model/experience/experience_model.dart';
+import '../../../model/profile/profile_model.dart';
+import '../../../model/project/project_model.dart';
+import '../../../model/skill/skill_model.dart';
 
 class ResumeController extends GetxController {
   final profileSection = ProfileModel().obs;
   final educationSection = <EducationModel>[].obs;
   final experienceSection = <ExperienceModel>[].obs;
   final skillsSection = <SkillModel>[].obs;
-  final languagesSection = <LanguagesModel>[].obs;
-  final projectsSection = <ProjectsModel>[].obs;
+  final languagesSection = <LanguageModel>[].obs;
+  final projectsSection = <ProjectModel>[].obs;
 
   final sectionIndex = 0.obs;
   final dragging = false.obs;
 
+  final isLoading = false.obs;
+
+  // Resume Box
+  late Box<dynamic> resumeBox;
+
   @override
-  void onInit() {
+  Future<void> onInit() async {
+    // Get the resume box
+    resumeBox = Hive.box(resume_box_name);
+    // resumeBox.deleteFromDisk();
+    await getProfileSection();
+    await getEducationSection();
+    await getExperienceSection();
+    await getSkillsSection();
+    await getLanguages();
+    await getProjects();
+    getResume();
     super.onInit();
   }
 
-  final List<ResumeItem> _resumeItems = [
-    ResumeItem(
+  @override
+  void onReady() {
+    super.onReady();
+  }
+
+  @override
+  void onClose() {
+    resumeBox.close();
+    super.onClose();
+  }
+
+  // ignore: slash_for_doc_comments
+  /**
+   *  Profile Section APIs
+   */
+  // Add or update the profile section
+  Future<void> addOrUpdateProfileSection(ProfileModel profile) async {
+    try {
+      await resumeBox.put('profile', profile.toJson());
+      // profileSection.value = profile;
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // Get the profile section
+  Future<ProfileModel> getProfileSection() async {
+    try {
+      isLoading(true);
+      final data = await resumeBox.get('profile');
+      log(data.toString());
+      profileSection.value = ProfileModel.fromJson(data);
+      return profileSection.value;
+    } catch (e) {
+      log(e.toString());
+      return ProfileModel();
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  // ignore: slash_for_doc_comments
+  /**
+   *  Education Section APIs
+   */
+
+  // Add the education section to the resume
+  Future<void> addEducationSection(EducationModel education) async {
+    try {
+      final data = await resumeBox.get('education', defaultValue: []);
+      if (data.length > 0) {
+        final List<EducationModel> educations =
+            (data as List).map((e) => EducationModel.fromJson(e)).toList();
+        educations.add(education);
+        await resumeBox.put(
+            'education', educations.map((e) => e.toJson()).toList());
+      } else {
+        await resumeBox.put('education', [education.toJson()]);
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // Get education section from the resume
+  Future<void> getEducationSection() async {
+    try {
+      isLoading(true);
+      final data = await resumeBox.get('education', defaultValue: []);
+      if (data != null) {
+        log(educationSection.toString());
+        final List<EducationModel> educations =
+            (data as List).map((e) => EducationModel.fromJson(e)).toList();
+        educationSection.value = educations;
+      }
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  // Update the education by id
+  Future<void> updateEducationSection(EducationModel education) async {
+    try {
+      final data = await resumeBox.get('education');
+      if (data != null) {
+        final List<EducationModel> educations =
+            (data as List).map((e) => EducationModel.fromJson(e)).toList();
+        final index =
+            educations.indexWhere((element) => element.id == education.id);
+        if (index != -1) {
+          educations[index] = education;
+          await resumeBox.put(
+              'education', educations.map((e) => e.toJson()).toList());
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // Delete the education by id
+  Future<void> deleteEducationSection(EducationModel education) async {
+    try {
+      final data = await resumeBox.get('education');
+      if (data != null) {
+        final List<EducationModel> educations =
+            (data as List).map((e) => EducationModel.fromJson(e)).toList();
+        final index =
+            educations.indexWhere((element) => element.id == education.id);
+        if (index != -1) {
+          educations.removeAt(index);
+          await resumeBox.put(
+              'education', educations.map((e) => e.toJson()).toList());
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // ignore: slash_for_doc_comments
+  /**
+   *  Experience Section APIs
+   */
+
+  // Add the experience section to the resume
+  Future<void> addExperienceSection(ExperienceModel experience) async {
+    try {
+      final data = await resumeBox.get('experience', defaultValue: []);
+      if (data.length > 0) {
+        final List<ExperienceModel> experiences =
+            (data as List).map((e) => ExperienceModel.fromJson(e)).toList();
+        experiences.add(experience);
+        await resumeBox.put(
+            'experience', experiences.map((e) => e.toJson()).toList());
+      } else {
+        await resumeBox.put('experience', [experience.toJson()]);
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // Get experience section from the resume
+  Future<void> getExperienceSection() async {
+    try {
+      isLoading(true);
+      final data = await resumeBox.get('experience', defaultValue: []);
+      if (data.length > 0) {
+        final List<ExperienceModel> experiences =
+            (data as List).map((e) => ExperienceModel.fromJson(e)).toList();
+        experienceSection.value = experiences;
+      } else {
+        experienceSection.value = [];
+      }
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  // Update the experience by id
+  Future<void> updateExperienceSection(ExperienceModel experience) async {
+    try {
+      final data = await resumeBox.get('experience');
+      if (data != null) {
+        final List<ExperienceModel> experiences =
+            (data as List).map((e) => ExperienceModel.fromJson(e)).toList();
+        final index =
+            experiences.indexWhere((element) => element.id == experience.id);
+        if (index != -1) {
+          experiences[index] = experience;
+          await resumeBox.put(
+              'experience', experiences.map((e) => e.toJson()).toList());
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // Delete the experience by id
+  Future<void> deleteExperienceSection(ExperienceModel experience) async {
+    try {
+      final data = await resumeBox.get('experience', defaultValue: []);
+      if (data.length > 0) {
+        final List<ExperienceModel> experiences =
+            (data as List).map((e) => ExperienceModel.fromJson(e)).toList();
+        final index =
+            experiences.indexWhere((element) => element.id == experience.id);
+        if (index != -1) {
+          experiences.removeAt(index);
+          await resumeBox.put(
+              'experience', experiences.map((e) => e.toJson()).toList());
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // ignore: slash_for_doc_comments
+  /**
+   *  Skills Section APIs
+   */
+
+  // Add the skills section to the resume
+  Future<void> addSkillsSection(SkillModel skills) async {
+    try {
+      final data = await resumeBox.get('skills', defaultValue: []);
+      if (data.length > 0) {
+        final List<SkillModel> skillsList =
+            (data as List).map((e) => SkillModel.fromJson(e)).toList();
+        skillsList.add(skills);
+        await resumeBox.put(
+            'skills', skillsList.map((e) => e.toJson()).toList());
+      } else {
+        await resumeBox.put('skills', [skills.toJson()]);
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // Get skills section from the resume
+  Future<void> getSkillsSection() async {
+    try {
+      isLoading(true);
+      final data = await resumeBox.get('skills', defaultValue: []);
+      if (data.length > 0) {
+        final List<SkillModel> skills =
+            (data as List).map((e) => SkillModel.fromJson(e)).toList();
+        skillsSection.value = skills;
+        log(skills.toString());
+      }
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  // Update the skills by id
+  Future<void> updateSkillsSection(SkillModel skill) async {
+    try {
+      final data = await resumeBox.get('skills');
+      if (data != null) {
+        final List<SkillModel> skills =
+            (data as List).map((e) => SkillModel.fromJson(e)).toList();
+        final index = skills.indexWhere((element) => element.id == skill.id);
+        if (index != -1) {
+          skills[index] = skill;
+          await resumeBox.put('skills', skills.map((e) => e.toJson()).toList());
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // Delete the skills by id
+  Future<void> deleteSkillsSection(SkillModel skill) async {
+    try {
+      final data = await resumeBox.get('skills');
+      if (data != null) {
+        final List<SkillModel> skills =
+            (data as List).map((e) => SkillModel.fromJson(e)).toList();
+        final index = skills.indexWhere((element) => element.id == skill.id);
+        if (index != -1) {
+          skills.removeAt(index);
+          await resumeBox.put('skills', skills.map((e) => e.toJson()).toList());
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // ignore: slash_for_doc_comments
+  /**
+   *  Projects Section APIs
+   */
+
+  // Add the projects section to the resume
+  Future<void> addProjectSection(ProjectModel project) async {
+    try {
+      final data = await resumeBox.get('projects', defaultValue: []);
+      if (data.length > 0) {
+        final List<ProjectModel> projects =
+            (data as List).map((e) => ProjectModel.fromJson(e)).toList();
+        projects.add(project);
+        await resumeBox.put(
+            'projects', projects.map((e) => e.toJson()).toList());
+      } else {
+        await resumeBox.put('projects', [project.toJson()]);
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // Get projects
+  Future<void> getProjects() async {
+    try {
+      isLoading(true);
+      final data = await resumeBox.get('projects', defaultValue: []);
+      if (data.length > 0) {
+        final List<ProjectModel> projects =
+            (data as List).map((e) => ProjectModel.fromJson(e)).toList();
+        projectsSection.value = projects;
+        log(projects.toString());
+      }
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  // Update the project by id
+  Future<void> updateProjectSection(ProjectModel project) async {
+    try {
+      final data = await resumeBox.get('projects');
+      if (data != null) {
+        final List<ProjectModel> projects =
+            (data as List).map((e) => ProjectModel.fromJson(e)).toList();
+        final index =
+            projects.indexWhere((element) => element.id == project.id);
+        if (index != -1) {
+          projects[index] = project;
+          await resumeBox.put(
+              'projects', projects.map((e) => e.toJson()).toList());
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // Delete the project by id
+  Future<void> deleteProjectSection(ProjectModel project) async {
+    try {
+      final data = await resumeBox.get('projects');
+      if (data != null) {
+        final List<ProjectModel> projects =
+            (data as List).map((e) => ProjectModel.fromJson(e)).toList();
+        final index =
+            projects.indexWhere((element) => element.id == project.id);
+        if (index != -1) {
+          projects.removeAt(index);
+          await resumeBox.put(
+              'projects', projects.map((e) => e.toJson()).toList());
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // ignore: slash_for_doc_comments
+  /**
+   *  Language Section APIs
+   */
+
+  // Add the language section to the resume
+  Future<void> addLanguageSection(LanguageModel language) async {
+    try {
+      final data = await resumeBox.get('languages', defaultValue: []);
+      if (data.length > 0) {
+        final List<LanguageModel> languages =
+            (data as List).map((e) => LanguageModel.fromJson(e)).toList();
+        languages.add(language);
+        await resumeBox.put(
+            'languages', languages.map((e) => e.toJson()).toList());
+      } else {
+        await resumeBox.put('languages', [language.toJson()]);
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // Get languages
+  Future<void> getLanguages() async {
+    try {
+      isLoading(true);
+      final data = await resumeBox.get('languages', defaultValue: []);
+      if (data.length > 0) {
+        final List<LanguageModel> languages =
+            (data as List).map((e) => LanguageModel.fromJson(e)).toList();
+        languagesSection.value = languages;
+        log(languages.toString());
+      }
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  // Update the language by id
+  Future<void> updateLanguageSection(LanguageModel language) async {
+    try {
+      final data = await resumeBox.get('languages');
+      if (data != null) {
+        final List<LanguageModel> languages =
+            (data as List).map((e) => LanguageModel.fromJson(e)).toList();
+        final index =
+            languages.indexWhere((element) => element.id == language.id);
+        if (index != -1) {
+          languages[index] = language;
+          await resumeBox.put(
+              'languages', languages.map((e) => e.toJson()).toList());
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // Delete the language by id
+  Future<void> deleteLanguageSection(LanguageModel language) async {
+    try {
+      final data = await resumeBox.get('languages');
+      if (data != null) {
+        final List<LanguageModel> languages =
+            (data as List).map((e) => LanguageModel.fromJson(e)).toList();
+        final index =
+            languages.indexWhere((element) => element.id == language.id);
+        if (index != -1) {
+          languages.removeAt(index);
+          await resumeBox.put(
+              'languages', languages.map((e) => e.toJson()).toList());
+        }
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  // ignore: slash_for_doc_comments
+  /**
+   *  Get Resume APIs
+   */
+
+  // Get the resume
+  List<ResumeItemModel> getResume() {
+    List<ResumeItemModel> resume = [];
+    isLoading(true);
+    resume.add(ResumeItemModel(
       id: 1,
       name: 'Profile',
-      data: ProfileModel(
-        name: 'John Doe',
-        email: 'john@gmail.com',
-        phone: '+91 1234567890',
-        address: '123, ABC Street, XYZ City, 123456',
-        designation: 'Software Engineer',
-      ),
-    ),
-    ResumeItem(
+      data: profileSection.value,
+    ));
+
+    resume.add(ResumeItemModel(
       id: 2,
       name: 'Education',
-      data: [
-        EducationModel(
-          institute: 'ABC University',
-          degree: 'B.Tech',
-          duration: '2015 - 2019',
-        ),
-        EducationModel(
-          institute: 'XYZ School',
-          degree: 'HSC',
-          duration: '2013 - 2015',
-        ),
-        EducationModel(
-          institute: 'ABC School',
-          degree: 'SSC',
-          duration: '2011 - 2013',
-        ),
-      ],
-    ),
-    ResumeItem(
+      data: educationSection.value,
+    ));
+
+    resume.add(ResumeItemModel(
       id: 3,
       name: 'Experience',
-      data: [
-        ExperienceModel(
-          company: 'ABC Company',
-          designation: 'Software Engineer',
-          duration: '2019 - Present',
-          description:
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        ),
-        ExperienceModel(
-          company: 'XYZ Company',
-          designation: 'Software Engineer',
-          duration: '2018 - 2019',
-          description:
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        ),
-      ],
-    ),
-    ResumeItem(
+      data: experienceSection.value,
+    ));
+
+    resume.add(ResumeItemModel(
       id: 4,
       name: 'Skills',
-      data: [
-        SkillModel(
-          id: 1,
-          skill: 'Flutter',
-        ),
-        SkillModel(
-          id: 2,
-          skill: 'Dart',
-        ),
-        SkillModel(
-          id: 3,
-          skill: 'Firebase',
-        ),
-        SkillModel(
-          id: 4,
-          skill: 'NodeJS',
-        ),
-        SkillModel(
-          id: 5,
-          skill: 'MongoDB',
-        ),
-      ],
+      data: skillsSection.value,
+    ));
+
+    resume.add(ResumeItemModel(
+      id: 5,
+      name: 'Projects',
+      data: projectsSection.value,
+    ));
+
+    resume.add(ResumeItemModel(
+      id: 6,
+      name: 'Languages',
+      data: languagesSection.value,
+    ));
+    _resumeItemModelResumeItemModels.assignAll(resume);
+    isLoading(false);
+    return resume;
+  }
+
+  List<ResumeItemModel> _resumeItemModelResumeItemModels = [
+    ResumeItemModel(
+      id: 1,
+      name: 'Profile',
+      data: null,
+    ),
+    ResumeItemModel(
+      id: 2,
+      name: 'Education',
+      data: [],
+    ),
+    ResumeItemModel(
+      id: 3,
+      name: 'Experience',
+      data: [],
+    ),
+    ResumeItemModel(
+      id: 4,
+      name: 'Skills',
+      data: [],
     ),
 
-    ResumeItem(
+    ResumeItemModel(
       id: 5,
       name: 'Languages',
-      data: [
-        LanguagesModel(
-          language: 'English',
-          level: 'Fluent',
-        ),
-        LanguagesModel(
-          language: 'Hindi',
-          level: 'Fluent',
-        ),
-        LanguagesModel(
-          language: 'Marathi',
-          level: 'Fluent',
-        ),
-      ],
+      data: [],
     ),
 
-    ResumeItem(
+    ResumeItemModel(
       id: 6,
       name: 'Projects',
-      data: [
-        ProjectsModel(
-          project: 'Project 1',
-          description:
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-          year: '2020',
-        ),
-        ProjectsModel(
-          project: 'Project 2',
-          description:
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-          year: '2020',
-        ),
-        ProjectsModel(
-          project: 'Project 3',
-          description:
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-          year: '2020',
-        ),
-      ],
+      data: [],
     ),
     // add more items here
   ].obs;
 
-  List<ResumeItem> get resumeItems => _resumeItems.toList();
+  set resumeItems(List<ResumeItemModel> value) =>
+      _resumeItemModelResumeItemModels = value;
+
+  List<ResumeItemModel> get resumeItems =>
+      _resumeItemModelResumeItemModels.toList();
 
   void onSwitch(int index1, int index2) {
-    final item1 = _resumeItems[index1];
-    final item2 = _resumeItems[index2];
-    _resumeItems[index1] = item2;
-    _resumeItems[index2] = item1;
+    final item1 = _resumeItemModelResumeItemModels[index1];
+    final item2 = _resumeItemModelResumeItemModels[index2];
+    _resumeItemModelResumeItemModels[index1] = item2;
+    _resumeItemModelResumeItemModels[index2] = item1;
   }
 }

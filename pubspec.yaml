@@ -11,11 +11,16 @@ dependencies:
   flutter: 
     sdk: flutter
   flutter_staggered_grid_view: ^0.6.2
+  hive: 
+  hive_flutter:
 
 dev_dependencies: 
   flutter_lints: 2.0.1
   flutter_test: 
     sdk: flutter
+
+  hive_generator:
+  build_runner:
 
 flutter: 
   uses-material-design: true

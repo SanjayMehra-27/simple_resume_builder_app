@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simple_resume_builder_app/app/constants/text_style_const/text_style_const.dart';
+import 'package:simple_resume_builder_app/app/modules/resume/controllers/resume_controller.dart';
 
+import '../../../model/project/project_model.dart';
 import '../../../widgets/buttons/primary/primary_button.dart';
 import '../../../widgets/text_field/primary/primary_text_field.dart';
 
@@ -132,7 +134,7 @@ class ProjectsPage extends StatelessWidget {
   }
 }
 
-class AddProjectsBottomsheet extends StatelessWidget {
+class AddProjectsBottomsheet extends GetView<ResumeController> {
   const AddProjectsBottomsheet({
     Key? key,
   }) : super(key: key);
@@ -182,7 +184,14 @@ class AddProjectsBottomsheet extends StatelessWidget {
             icon: const Icon(Icons.save),
             onPressed: () {
               // Save Projects
-              Get.back();
+              controller.addProjectSection(
+                ProjectModel(
+                  project: 'Project 1',
+                  description:
+                      'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                  year: '2020',
+                ),
+              );
             },
           ),
         ],

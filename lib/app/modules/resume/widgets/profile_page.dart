@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:simple_resume_builder_app/app/constants/text_style_const/text_style_const.dart';
 
+import '../../../model/profile/profile_model.dart';
 import '../../../widgets/buttons/primary/primary_button.dart';
 import '../../../widgets/text_field/primary/primary_text_field.dart';
+import '../controllers/resume_controller.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends GetView<ResumeController> {
   const ProfilePage({Key? key}) : super(key: key);
 
   @override
@@ -81,7 +84,15 @@ class ProfilePage extends StatelessWidget {
                     PrimaryButton(
                       text: 'Save',
                       icon: const Icon(Icons.save, color: Colors.white),
-                      onPressed: () {},
+                      onPressed: () {
+                        controller.addOrUpdateProfileSection(ProfileModel(
+                          name: 'Sanjay',
+                          email: 'john@gmail.com',
+                          phone: '+91 1234567890',
+                          address: '123, ABC Street, XYZ City, 123456',
+                          designation: 'Software Engineer',
+                        ));
+                      },
                     ),
                   ]),
             ),
